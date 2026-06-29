@@ -2,6 +2,7 @@ const express = require('express');
 const { transactions } = require('../store/transactions');
 const { createTransaction } = require('../models/transaction');
 const { validateTransaction } = require('../validators/transactionValidator');
+const { validateDateFilters, filterTransactions } = require('../utils/helpers');
 
 const router = express.Router();
 
@@ -28,10 +29,25 @@ router.post('/', (req, res) => {
 
 /**
  * GET /transactions
- * Return all transactions.
+ * Return transactions, optionally filtered (Task 3).
+ *
+ * Query params (all optional, combined with AND logic):
+ *   ?accountId=ACC-12345        match where fromAccount OR toAccount equals it
+ *   ?type=transfer              match by transaction type
+ *   ?from=2024-01-01&to=...     inclusive date range on `timestamp`
+ *
+ * With no params the full list is returned. Invalid dates yield a 400.
  */
 router.get('/', (req, res) => {
-  return res.status(200).json(transactions);
+  const { accountId, type, from, to } = req.query;
+
+  const errors = validateDateFilters({ from, to });
+  if (errors.length > 0) {
+    return res.status(400).json({ error: 'Invalid filter parameters', details: errors });
+  }
+
+  const result = filterTransactions(transactions, { accountId, type, from, to });
+  return res.status(200).json(result);
 });
 
 /**
