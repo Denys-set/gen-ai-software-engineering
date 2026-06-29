@@ -77,4 +77,30 @@ function filterTransactions(transactions, { accountId, type, from, to } = {}) {
   });
 }
 
-module.exports = { validateDateFilters, filterTransactions };
+/**
+ * Compute an account's balance from its transactions, kept separate per
+ * currency (money in different currencies is not additive):
+ *   credits = sum of amounts where toAccount === accountId
+ *   debits  = sum of amounts where fromAccount === accountId
+ *   balance = credits - debits  (independently for each currency)
+ *
+ * @param {Array<Object>} transactions
+ * @param {string} accountId
+ * @returns {Array<{currency: string, balance: number}>}
+ */
+function computeBalances(transactions, accountId) {
+  const byCurrency = new Map();
+
+  const apply = (currency, delta) => {
+    byCurrency.set(currency, (byCurrency.get(currency) || 0) + delta);
+  };
+
+  for (const t of transactions) {
+    if (t.toAccount === accountId) apply(t.currency, t.amount);
+    if (t.fromAccount === accountId) apply(t.currency, -t.amount);
+  }
+
+  return Array.from(byCurrency, ([currency, balance]) => ({ currency, balance }));
+}
+
+module.exports = { validateDateFilters, filterTransactions, computeBalances };
