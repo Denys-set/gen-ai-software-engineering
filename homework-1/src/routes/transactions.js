@@ -1,6 +1,7 @@
 const express = require('express');
 const { transactions } = require('../store/transactions');
 const { createTransaction } = require('../models/transaction');
+const { validateTransaction } = require('../validators/transactionValidator');
 
 const router = express.Router();
 
@@ -8,14 +9,15 @@ const router = express.Router();
  * POST /transactions
  * Create a new transaction.
  *
- * Task 1 validation is intentionally minimal: only that `amount` is a
- * positive number. Deeper validation is added in Task 2.
+ * Validation (Task 2) lives in transactionValidator and collects ALL errors.
+ * On failure we return HTTP 400 with { error, details }.
  */
 router.post('/', (req, res) => {
   const { fromAccount, toAccount, amount, currency, type, status } = req.body || {};
 
-  if (typeof amount !== 'number' || !Number.isFinite(amount) || amount <= 0) {
-    return res.status(400).json({ error: 'amount must be a positive number' });
+  const errors = validateTransaction(req.body);
+  if (errors.length > 0) {
+    return res.status(400).json({ error: 'Validation failed', details: errors });
   }
 
   const transaction = createTransaction({ fromAccount, toAccount, amount, currency, type, status });
