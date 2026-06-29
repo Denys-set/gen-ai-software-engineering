@@ -122,6 +122,26 @@ homework-1/
 - **Dev tooling:** nodemon (auto-reload)
 - **Storage:** in-memory array (no database)
 
+## 🤖 AI Usage
+
+This project was built with **Claude Code (Anthropic Claude — Opus model)**, used as a
+pair-programming assistant from the terminal. No other AI tools were used.
+
+I worked in a **prompt → review → test → refine** loop:
+
+1. **Prompt** — each task was driven by a focused, self-contained prompt, starting from a shared
+   project-context block so the AI always knew the model, folder layout, and conventions.
+2. **Review** — I read every generated file rather than blind-pasting, checking it against the
+   task requirements and the in-memory-storage constraint.
+3. **Test** — I ran the API and exercised each endpoint with `curl` and the demo scripts
+   (`demo/run.sh`, `demo/smoke-test.sh`) before moving on.
+4. **Refine** — when output was wrong or incomplete, I iterated with a reusable refinement prompt
+   until it passed.
+
+📄 The exact prompts I used, in order, are logged in **[PROMPTS.md](./PROMPTS.md)**.
+📸 Screenshots of the AI interactions and the running API are in
+**[`docs/screenshots/`](./docs/screenshots/)**.
+
 ## ▶️ How to Run
 
 See **[HOWTORUN.md](./HOWTORUN.md)** for full setup, run, seed, and test
