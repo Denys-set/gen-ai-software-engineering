@@ -80,7 +80,7 @@ Create these four endpoints:
 Rules:
 - Use an in-memory array as the store (in src/models/transaction.js or a small store module).
 - On POST, auto-generate `id` (UUID) and `timestamp` (ISO 8601), and default `status` to
-  "completed" unless provided. Accept fromAccount, toAccount, amount, currency, type from the body.
+  "completed" unless provided. Accept from Account, toAccount, amount, currency, type from the body.
 - Validate that `amount` is a positive number; if not, return 400 with a JSON error message.
 - Balance logic: for the given accountId, sum amounts where toAccount == accountId (credits)
   and subtract amounts where fromAccount == accountId (debits). Return
