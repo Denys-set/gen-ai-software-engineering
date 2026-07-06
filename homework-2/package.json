@@ -16,7 +16,7 @@
     "express",
     "api"
   ],
-  "author": "Denys",
+  "author": "Denys Kubrakov <dkbeetroot@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "csv-parse": "^5.5.6",
