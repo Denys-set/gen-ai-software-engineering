@@ -1,0 +1,4 @@
+customer_id,customer_email,customer_name,subject,description,category,priority
+GOOD1,valid@example.com,Good User,Valid subject here,This description is long enough to pass validation checks,technical_issue,medium
+BAD1,not-an-email,Bad User,Valid subject here,This description is long enough to pass validation checks,technical_issue,medium
+GOOD2,alsovalid@example.com,Another Good User,Another valid subject,This description is also long enough to pass the minimum length check,account_access,high

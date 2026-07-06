@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket>
+    <customer_id>X001</customer_id>
+    <customer_email>alice@xml.com</customer_email>
+    <customer_name>Alice XML</customer_name>
+    <subject>Cannot login after update</subject>
+    <description>I cannot login to my account since the last system update. My password is correct but I keep getting locked out.</description>
+    <category>account_access</category>
+    <priority>high</priority>
+    <tags><tag>login</tag><tag>update</tag></tags>
+    <metadata><source>web_form</source><browser>Chrome</browser><device_type>desktop</device_type></metadata>
+  </ticket>
+  <ticket>
+    <customer_id>X002</customer_id>
+    <customer_email>bob@xml.com</customer_email>
+    <customer_name>Bob XML</customer_name>
+    <subject>App crash on dashboard</subject>
+    <description>The app crashes every time I open the main dashboard. This started happening after the recent update.</description>
+    <category>technical_issue</category>
+    <priority>urgent</priority>
+    <tags><tag>crash</tag><tag>dashboard</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X003</customer_id>
+    <customer_email>carol@xml.com</customer_email>
+    <customer_name>Carol XML</customer_name>
+    <subject>Invoice for last month missing</subject>
+    <description>I made my monthly payment but the invoice for last month has not appeared in my billing history.</description>
+    <category>billing_question</category>
+    <priority>medium</priority>
+    <tags><tag>invoice</tag><tag>billing</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X004</customer_id>
+    <customer_email>dave@xml.com</customer_email>
+    <customer_name>Dave XML</customer_name>
+    <subject>Suggestion for batch operations</subject>
+    <description>It would be nice to be able to perform batch operations on multiple items at the same time to save time.</description>
+    <category>feature_request</category>
+    <priority>low</priority>
+  </ticket>
+  <ticket>
+    <customer_id>X005</customer_id>
+    <customer_email>eva@xml.com</customer_email>
+    <customer_name>Eva XML</customer_name>
+    <subject>Bug in user permissions</subject>
+    <description>I found a bug where user permissions are not being applied correctly. Steps to reproduce: create user, assign role, unexpected behavior occurs.</description>
+    <category>bug_report</category>
+    <priority>high</priority>
+    <tags><tag>bug</tag><tag>permissions</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X006</customer_id>
+    <customer_email>frank@xml.com</customer_email>
+    <customer_name>Frank XML</customer_name>
+    <subject>Password reset email not arriving</subject>
+    <description>I requested a password reset email multiple times but it is not arriving in my inbox or spam folder.</description>
+    <category>account_access</category>
+    <priority>medium</priority>
+  </ticket>
+  <ticket>
+    <customer_id>X007</customer_id>
+    <customer_email>grace@xml.com</customer_email>
+    <customer_name>Grace XML</customer_name>
+    <subject>Error on file upload page</subject>
+    <description>There is a persistent error that appears whenever I try to upload files through the file upload interface.</description>
+    <category>technical_issue</category>
+    <priority>medium</priority>
+    <tags><tag>error</tag><tag>upload</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X008</customer_id>
+    <customer_email>henry@xml.com</customer_email>
+    <customer_name>Henry XML</customer_name>
+    <subject>Subscription charge dispute</subject>
+    <description>I was charged for a subscription I already cancelled. I have the cancellation confirmation email and need a refund.</description>
+    <category>billing_question</category>
+    <priority>high</priority>
+    <tags><tag>charge</tag><tag>refund</tag><tag>subscription</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X009</customer_id>
+    <customer_email>iris@xml.com</customer_email>
+    <customer_name>Iris XML</customer_name>
+    <subject>Please add notification preferences</subject>
+    <description>Please add a way to customize notification preferences so I can choose which events send email alerts.</description>
+    <category>feature_request</category>
+    <priority>low</priority>
+  </ticket>
+  <ticket>
+    <customer_id>X010</customer_id>
+    <customer_email>jake@xml.com</customer_email>
+    <customer_name>Jake XML</customer_name>
+    <subject>Unexpected behavior on mobile</subject>
+    <description>The app shows unexpected behavior when scrolling on mobile devices. Items jump around and the layout breaks.</description>
+    <category>bug_report</category>
+    <priority>medium</priority>
+    <tags><tag>bug</tag><tag>mobile</tag><tag>unexpected behavior</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X011</customer_id>
+    <customer_email>kate@xml.com</customer_email>
+    <customer_name>Kate XML</customer_name>
+    <subject>Sign in with Google not working</subject>
+    <description>The Google sign in option is not working. When I click it nothing happens and I have to use email login.</description>
+    <category>account_access</category>
+    <priority>high</priority>
+  </ticket>
+  <ticket>
+    <customer_id>X012</customer_id>
+    <customer_email>liam@xml.com</customer_email>
+    <customer_name>Liam XML</customer_name>
+    <subject>System broken after migration</subject>
+    <description>After the data migration last night the system is broken and many features are not working properly.</description>
+    <category>technical_issue</category>
+    <priority>urgent</priority>
+    <tags><tag>broken</tag><tag>migration</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X013</customer_id>
+    <customer_email>mia@xml.com</customer_email>
+    <customer_name>Mia XML</customer_name>
+    <subject>Payment method expired handling</subject>
+    <description>When my payment method expired I was not notified and my account was suspended without warning or email.</description>
+    <category>billing_question</category>
+    <priority>medium</priority>
+    <tags><tag>payment</tag><tag>notification</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X014</customer_id>
+    <customer_email>noah@xml.com</customer_email>
+    <customer_name>Noah XML</customer_name>
+    <subject>Enhancement to search functionality</subject>
+    <description>Enhancement request: add fuzzy search so the search bar can find results even with minor spelling mistakes.</description>
+    <category>feature_request</category>
+    <priority>medium</priority>
+  </ticket>
+  <ticket>
+    <customer_id>X015</customer_id>
+    <customer_email>olivia@xml.com</customer_email>
+    <customer_name>Olivia XML</customer_name>
+    <subject>Reproduce steps for notification bug</subject>
+    <description>Here are the steps to reproduce the notification bug: 1) enable notifications 2) trigger event 3) no notification appears despite settings.</description>
+    <category>bug_report</category>
+    <priority>medium</priority>
+    <tags><tag>bug</tag><tag>notifications</tag><tag>reproduce</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X016</customer_id>
+    <customer_email>paul@xml.com</customer_email>
+    <customer_name>Paul XML</customer_name>
+    <subject>Account access for team members</subject>
+    <description>I need to grant account access to three new team members but the invitation system is not sending the emails.</description>
+    <category>account_access</category>
+    <priority>medium</priority>
+  </ticket>
+  <ticket>
+    <customer_id>X017</customer_id>
+    <customer_email>quinn@xml.com</customer_email>
+    <customer_name>Quinn XML</customer_name>
+    <subject>Application exception in batch job</subject>
+    <description>Our nightly batch job is throwing an exception at step three. This is causing our reports to be incomplete each morning.</description>
+    <category>technical_issue</category>
+    <priority>urgent</priority>
+    <tags><tag>exception</tag><tag>batch</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X018</customer_id>
+    <customer_email>rachel@xml.com</customer_email>
+    <customer_name>Rachel XML</customer_name>
+    <subject>Annual plan refund question</subject>
+    <description>I upgraded to the annual plan last week but now want to downgrade. Am I eligible for a partial refund?</description>
+    <category>billing_question</category>
+    <priority>low</priority>
+    <tags><tag>refund</tag><tag>annual</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X019</customer_id>
+    <customer_email>sam@xml.com</customer_email>
+    <customer_name>Sam XML</customer_name>
+    <subject>Please add CSV import feature</subject>
+    <description>Please add a CSV import feature so I can bulk upload data instead of entering each record one by one manually.</description>
+    <category>feature_request</category>
+    <priority>medium</priority>
+    <tags><tag>import</tag><tag>csv</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X020</customer_id>
+    <customer_email>tina@xml.com</customer_email>
+    <customer_name>Tina XML</customer_name>
+    <subject>Bug causes duplicate entries</subject>
+    <description>There is a bug that causes entries to be duplicated when I refresh the page after saving. Very reproducible issue.</description>
+    <category>bug_report</category>
+    <priority>high</priority>
+    <tags><tag>bug</tag><tag>duplicate</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X021</customer_id>
+    <customer_email>uma@xml.com</customer_email>
+    <customer_name>Uma XML</customer_name>
+    <subject>Inquiry about service availability</subject>
+    <description>I would like to know the uptime guarantee for your service and whether you have a service level agreement.</description>
+    <category>other</category>
+    <priority>low</priority>
+  </ticket>
+  <ticket>
+    <customer_id>X022</customer_id>
+    <customer_email>victor@xml.com</customer_email>
+    <customer_name>Victor XML</customer_name>
+    <subject>2FA locked out of account</subject>
+    <description>I lost my phone with the 2fa app and am now completely locked out of my account. Need emergency access restored.</description>
+    <category>account_access</category>
+    <priority>urgent</priority>
+    <tags><tag>2fa</tag><tag>locked out</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X023</customer_id>
+    <customer_email>wendy@xml.com</customer_email>
+    <customer_name>Wendy XML</customer_name>
+    <subject>Data not loading after error</subject>
+    <description>After encountering an error yesterday my data is no longer loading properly. The screen shows empty tables.</description>
+    <category>technical_issue</category>
+    <priority>high</priority>
+    <tags><tag>error</tag><tag>data</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X024</customer_id>
+    <customer_email>xavier@xml.com</customer_email>
+    <customer_name>Xavier XML</customer_name>
+    <subject>Overcharged on enterprise plan</subject>
+    <description>Our enterprise plan invoice this month shows a charge that is higher than our agreed contract rate.</description>
+    <category>billing_question</category>
+    <priority>high</priority>
+    <tags><tag>charge</tag><tag>enterprise</tag><tag>invoice</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X025</customer_id>
+    <customer_email>yara@xml.com</customer_email>
+    <customer_name>Yara XML</customer_name>
+    <subject>Would be nice to have dark theme</subject>
+    <description>Would be nice to have a dark theme option for the interface to reduce eye strain during long work sessions.</description>
+    <category>feature_request</category>
+    <priority>low</priority>
+  </ticket>
+  <ticket>
+    <customer_id>X026</customer_id>
+    <customer_email>zoe@xml.com</customer_email>
+    <customer_name>Zoe XML</customer_name>
+    <subject>Steps to reproduce the filter bug</subject>
+    <description>Steps to reproduce: apply multiple filters simultaneously and observe that the results show unexpected behavior and incorrect data.</description>
+    <category>bug_report</category>
+    <priority>medium</priority>
+    <tags><tag>bug</tag><tag>filter</tag><tag>reproduce</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X027</customer_id>
+    <customer_email>alan@xml.com</customer_email>
+    <customer_name>Alan XML</customer_name>
+    <subject>General feedback on the platform</subject>
+    <description>I wanted to share some general feedback about the platform. Overall I am happy but there are a few things I would improve.</description>
+    <category>other</category>
+    <priority>low</priority>
+  </ticket>
+  <ticket>
+    <customer_id>X028</customer_id>
+    <customer_email>bella@xml.com</customer_email>
+    <customer_name>Bella XML</customer_name>
+    <subject>Login session expires too quickly</subject>
+    <description>My login session keeps expiring after just a few minutes of inactivity which is very disruptive to my workflow.</description>
+    <category>account_access</category>
+    <priority>medium</priority>
+    <tags><tag>login</tag><tag>session</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X029</customer_id>
+    <customer_email>carlos@xml.com</customer_email>
+    <customer_name>Carlos XML</customer_name>
+    <subject>Critical error blocking production</subject>
+    <description>There is a critical error that is blocking our entire production workflow. This needs immediate attention and resolution.</description>
+    <category>technical_issue</category>
+    <priority>urgent</priority>
+    <tags><tag>critical</tag><tag>production down</tag><tag>error</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>X030</customer_id>
+    <customer_email>diana@xml.com</customer_email>
+    <customer_name>Diana XML</customer_name>
+    <subject>Enhancement for accessibility support</subject>
+    <description>Please add better accessibility support including screen reader compatibility and keyboard navigation throughout the app.</description>
+    <category>feature_request</category>
+    <priority>medium</priority>
+    <tags><tag>accessibility</tag><tag>enhancement</tag></tags>
+  </ticket>
+</tickets>
