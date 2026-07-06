@@ -1,0 +1,12 @@
+<tickets>
+  <ticket>
+    <customer_id>C30</customer_id>
+    <customer_email>dan@example.com</customer_email>
+    <customer_name>Dan</customer_name>
+    <subject>App crash on reports</subject>
+    <description>The app crashes every time I open the reports page</description>
+    <category>technical_issue</category>
+    <priority>urgent</priority>
+    <tags><tag>crash</tag><tag>reports</tag></tags>
+  </ticket>
+</tickets>

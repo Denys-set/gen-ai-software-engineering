@@ -1,0 +1,9 @@
+i[
+  {
+    "customer_id": "C20",
+    "customer_email": "cara@example.com",
+    "customer_name": "Cara",
+    "subject": "Refund please",
+    "description": "I was charged twice for my subscription last month"
+  }
+]

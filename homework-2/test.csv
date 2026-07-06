@@ -1,0 +1,3 @@
+customer_id,customer_email,customer_name,subject,description,category,priority,tags,metadata.source,metadata.browser,metadata.device_type
+C10,bob@example.com,Bob,Login broken,I cannot access my dashboard at all,account_access,high,vip;login,web_form,Firefox,desktop
+C11,bad-email,NoEmail,Short,too short,other,low,,email,Safari,mobile
