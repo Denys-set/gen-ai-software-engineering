@@ -1,0 +1,16 @@
+{
+  "name": "banking-transactions-api",
+  "version": "1.0.0",
+  "description": "A minimal in-memory Banking Transactions REST API built with Node.js and Express.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
