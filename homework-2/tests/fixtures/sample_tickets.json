@@ -1,0 +1,222 @@
+[
+  {
+    "customer_id": "J001",
+    "customer_email": "alice@json.com",
+    "customer_name": "Alice JSON",
+    "subject": "Cannot login after password reset",
+    "description": "I reset my password but now I cannot login. I keep getting locked out of my account.",
+    "category": "account_access",
+    "priority": "high",
+    "tags": ["login", "password"],
+    "metadata": { "source": "web_form", "browser": "Chrome", "device_type": "desktop" }
+  },
+  {
+    "customer_id": "J002",
+    "customer_email": "bob@json.com",
+    "customer_name": "Bob JSON",
+    "subject": "App crashes on reports page",
+    "description": "The application crashes every single time I navigate to the reports page and try to load data.",
+    "category": "technical_issue",
+    "priority": "urgent",
+    "tags": ["crash", "reports"],
+    "metadata": { "source": "api", "browser": "Firefox", "device_type": "desktop" }
+  },
+  {
+    "customer_id": "J003",
+    "customer_email": "carol@json.com",
+    "customer_name": "Carol JSON",
+    "subject": "Double charge on invoice",
+    "description": "I was charged twice for my subscription this month. I need a refund for the duplicate charge.",
+    "category": "billing_question",
+    "priority": "high",
+    "tags": ["charge", "refund"],
+    "metadata": { "source": "email", "browser": "Safari", "device_type": "mobile" }
+  },
+  {
+    "customer_id": "J004",
+    "customer_email": "dave@json.com",
+    "customer_name": "Dave JSON",
+    "subject": "Please add export to PDF feature",
+    "description": "It would be nice to have an option to export reports to PDF format for sharing with stakeholders.",
+    "category": "feature_request",
+    "priority": "low",
+    "tags": ["export", "pdf"],
+    "metadata": { "source": "web_form", "browser": "Chrome", "device_type": "desktop" }
+  },
+  {
+    "customer_id": "J005",
+    "customer_email": "eva@json.com",
+    "customer_name": "Eva JSON",
+    "subject": "Bug in search with special characters",
+    "description": "I found a bug where searching with special characters like ampersand causes unexpected behavior.",
+    "category": "bug_report",
+    "priority": "medium",
+    "tags": ["bug", "search"],
+    "metadata": { "source": "web_form", "browser": "Firefox", "device_type": "desktop" }
+  },
+  {
+    "customer_id": "J006",
+    "customer_email": "frank@json.com",
+    "customer_name": "Frank JSON",
+    "subject": "2FA authentication keeps failing",
+    "description": "My 2fa codes are being rejected even though I am entering them correctly from my authenticator app.",
+    "category": "account_access",
+    "priority": "urgent",
+    "tags": ["2fa", "authentication"],
+    "metadata": { "source": "web_form", "browser": "Chrome", "device_type": "mobile" }
+  },
+  {
+    "customer_id": "J007",
+    "customer_email": "grace@json.com",
+    "customer_name": "Grace JSON",
+    "subject": "Error saving form data",
+    "description": "I keep getting an error message when I try to save form data. The error says internal server error.",
+    "category": "technical_issue",
+    "priority": "high",
+    "tags": ["error", "form"],
+    "metadata": { "source": "web_form", "browser": "Safari", "device_type": "tablet" }
+  },
+  {
+    "customer_id": "J008",
+    "customer_email": "henry@json.com",
+    "customer_name": "Henry JSON",
+    "subject": "Subscription invoice missing",
+    "description": "I paid for my monthly subscription but I have not received an invoice for the payment yet.",
+    "category": "billing_question",
+    "priority": "medium",
+    "tags": ["invoice", "subscription"],
+    "metadata": { "source": "email", "browser": "Chrome", "device_type": "desktop" }
+  },
+  {
+    "customer_id": "J009",
+    "customer_email": "iris@json.com",
+    "customer_name": "Iris JSON",
+    "subject": "Suggestion to improve dashboard",
+    "description": "Enhancement suggestion: add customizable widgets to the main dashboard so users can arrange them.",
+    "category": "feature_request",
+    "priority": "low",
+    "tags": ["dashboard", "enhancement"],
+    "metadata": { "source": "web_form", "browser": "Firefox", "device_type": "desktop" }
+  },
+  {
+    "customer_id": "J010",
+    "customer_email": "jake@json.com",
+    "customer_name": "Jake JSON",
+    "subject": "Steps to reproduce the data import bug",
+    "description": "Steps to reproduce: 1) go to import page 2) upload CSV 3) unexpected behavior occurs and data is corrupted.",
+    "category": "bug_report",
+    "priority": "high",
+    "tags": ["bug", "import", "reproduce"],
+    "metadata": { "source": "api", "browser": "Chrome", "device_type": "desktop" }
+  },
+  {
+    "customer_id": "J011",
+    "customer_email": "kate@json.com",
+    "customer_name": "Kate JSON",
+    "subject": "General platform inquiry",
+    "description": "I am a new user and would like to learn more about the platform features available in the basic plan.",
+    "category": "other",
+    "priority": "low",
+    "tags": [],
+    "metadata": { "source": "web_form", "browser": "Chrome", "device_type": "desktop" }
+  },
+  {
+    "customer_id": "J012",
+    "customer_email": "liam@json.com",
+    "customer_name": "Liam JSON",
+    "subject": "Critical security issue found",
+    "description": "I found a critical security vulnerability that could allow unauthorized users to access private data.",
+    "category": "technical_issue",
+    "priority": "urgent",
+    "tags": ["security", "critical"],
+    "metadata": { "source": "api", "browser": "Firefox", "device_type": "desktop" }
+  },
+  {
+    "customer_id": "J013",
+    "customer_email": "mia@json.com",
+    "customer_name": "Mia JSON",
+    "subject": "Refund for accidental purchase",
+    "description": "I accidentally clicked the purchase button and need a refund. This was not an intentional payment.",
+    "category": "billing_question",
+    "priority": "medium",
+    "tags": ["refund", "payment"],
+    "metadata": { "source": "web_form", "browser": "Safari", "device_type": "mobile" }
+  },
+  {
+    "customer_id": "J014",
+    "customer_email": "noah@json.com",
+    "customer_name": "Noah JSON",
+    "subject": "Please add two-factor backup codes",
+    "description": "Please add the ability to generate backup codes for two-factor authentication in case of device loss.",
+    "category": "feature_request",
+    "priority": "medium",
+    "tags": ["2fa", "security", "enhancement"],
+    "metadata": { "source": "web_form", "browser": "Chrome", "device_type": "desktop" }
+  },
+  {
+    "customer_id": "J015",
+    "customer_email": "olivia@json.com",
+    "customer_name": "Olivia JSON",
+    "subject": "App not working on tablet",
+    "description": "The app is completely not working on my iPad tablet. The layout is broken and buttons are not responding.",
+    "category": "technical_issue",
+    "priority": "high",
+    "tags": ["broken", "tablet", "layout"],
+    "metadata": { "source": "web_form", "browser": "Safari", "device_type": "tablet" }
+  },
+  {
+    "customer_id": "J016",
+    "customer_email": "paul@json.com",
+    "customer_name": "Paul JSON",
+    "subject": "Unexpected exception during export",
+    "description": "When I click the export button an unexpected exception is thrown and the file is never generated.",
+    "category": "technical_issue",
+    "priority": "medium",
+    "tags": ["exception", "export"],
+    "metadata": { "source": "web_form", "browser": "Chrome", "device_type": "desktop" }
+  },
+  {
+    "customer_id": "J017",
+    "customer_email": "quinn@json.com",
+    "customer_name": "Quinn JSON",
+    "subject": "Billing address update not saving",
+    "description": "I am trying to update my billing address but the changes are not saving when I click the save button.",
+    "category": "billing_question",
+    "priority": "medium",
+    "tags": ["billing", "address"],
+    "metadata": { "source": "web_form", "browser": "Firefox", "device_type": "desktop" }
+  },
+  {
+    "customer_id": "J018",
+    "customer_email": "rachel@json.com",
+    "customer_name": "Rachel JSON",
+    "subject": "Would be nice to have calendar integration",
+    "description": "It would be nice to integrate with Google Calendar so meetings and deadlines can be synced automatically.",
+    "category": "feature_request",
+    "priority": "low",
+    "tags": ["calendar", "integration"],
+    "metadata": { "source": "email", "browser": "Chrome", "device_type": "desktop" }
+  },
+  {
+    "customer_id": "J019",
+    "customer_email": "sam@json.com",
+    "customer_name": "Sam JSON",
+    "subject": "Bug when printing from mobile",
+    "description": "I found a bug where printing from a mobile device produces incorrect output with missing data fields.",
+    "category": "bug_report",
+    "priority": "low",
+    "tags": ["bug", "mobile", "print"],
+    "metadata": { "source": "web_form", "browser": "Safari", "device_type": "mobile" }
+  },
+  {
+    "customer_id": "J020",
+    "customer_email": "tina@json.com",
+    "customer_name": "Tina JSON",
+    "subject": "Account merge request",
+    "description": "I have two separate accounts from different emails and need them merged into a single account.",
+    "category": "other",
+    "priority": "medium",
+    "tags": ["account", "merge"],
+    "metadata": { "source": "email", "browser": "Chrome", "device_type": "desktop" }
+  }
+]
