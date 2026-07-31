@@ -1,0 +1,20 @@
+{
+  "name": "homework-4-notes-pipeline",
+  "version": "1.0.0",
+  "description": "Sample Notes app + 4-agent bug/security/test pipeline (Homework 4)",
+  "author": "Denys Kubrakov <dkbeetroot@gmail.com>",
+  "license": "MIT",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "jest --runInBand",
+    "pipeline": "bash scripts/run-pipeline.sh"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  }
+}

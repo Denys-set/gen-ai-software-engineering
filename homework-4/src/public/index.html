@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Notes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-100 min-h-screen">
+    <main class="max-w-xl mx-auto p-6">
+      <h1 class="text-3xl font-bold text-slate-800 mb-6">📝 Notes</h1>
+
+      <form id="note-form" class="bg-white rounded-lg shadow p-4 mb-6 space-y-3">
+        <input
+          id="title"
+          type="text"
+          placeholder="Title"
+          class="w-full border border-slate-300 rounded px-3 py-2"
+        />
+        <textarea
+          id="body"
+          placeholder="Body"
+          class="w-full border border-slate-300 rounded px-3 py-2"
+        ></textarea>
+        <button
+          type="submit"
+          class="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700"
+        >
+          Add note
+        </button>
+      </form>
+
+      <ul id="notes" class="space-y-3"></ul>
+    </main>
+
+    <script>
+      async function load() {
+        const res = await fetch('/api/notes');
+        const notes = await res.json();
+        const ul = document.getElementById('notes');
+        ul.innerHTML = '';
+        for (const n of notes) {
+          const li = document.createElement('li');
+          li.className = 'bg-white rounded-lg shadow p-4';
+          const title = document.createElement('h2');
+          title.className = 'font-semibold text-slate-800';
+          title.textContent = n.title;
+          const body = document.createElement('p');
+          body.className = 'text-slate-600';
+          body.textContent = n.body;
+          li.append(title, body);
+          ul.appendChild(li);
+        }
+      }
+
+      document.getElementById('note-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('title').value;
+        const body = document.getElementById('body').value;
+        await fetch('/api/notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, body }),
+        });
+        document.getElementById('note-form').reset();
+        load();
+      });
+
+      load();
+    </script>
+  </body>
+</html>
