@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/denyskubrakov/Desktop/Denys/projects/gen-ai-software-engineering"
+      ]
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    },
+    "lorem-ipsum": {
+      "command": "/Users/denyskubrakov/Desktop/Denys/projects/gen-ai-software-engineering/homework-5/custom-mcp-server/.venv/bin/python",
+      "args": [
+        "/Users/denyskubrakov/Desktop/Denys/projects/gen-ai-software-engineering/homework-5/custom-mcp-server/server.py"
+      ]
+    }
+  }
+}
