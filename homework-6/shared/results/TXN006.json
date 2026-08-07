@@ -1,0 +1,25 @@
+{
+  "message_id": "4d39cc96-2c10-4e58-9f6b-e0760bef60dd",
+  "timestamp": "2026-08-07T14:34:40Z",
+  "source_agent": "transaction_validator",
+  "target_agent": "results",
+  "message_type": "transaction",
+  "data": {
+    "transaction_id": "TXN006",
+    "timestamp": "2026-03-16T10:05:00Z",
+    "source_account": "ACC-****",
+    "destination_account": "ACC-****",
+    "amount": "200.00",
+    "currency": "XYZ",
+    "transaction_type": "transfer",
+    "description": "Test payment",
+    "metadata": {
+      "channel": "online",
+      "country": "US"
+    },
+    "cross_border": false,
+    "cross_border_flags": [],
+    "status": "rejected",
+    "reason": "unsupported currency: XYZ"
+  }
+}

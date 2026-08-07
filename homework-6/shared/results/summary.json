@@ -1,0 +1,100 @@
+{
+  "generated_at": "2026-08-07T14:34:40Z",
+  "total": 8,
+  "approved": 6,
+  "rejected": 2,
+  "flagged_for_review": 3,
+  "cross_border": {
+    "total": 2,
+    "approved": 1,
+    "rejected": 1
+  },
+  "transactions": [
+    {
+      "transaction_id": "TXN001",
+      "status": "approved",
+      "cross_border": false,
+      "risk_score": 0,
+      "needs_review": false,
+      "reason": null,
+      "compliance_flags": [],
+      "cross_border_compliance_flags": []
+    },
+    {
+      "transaction_id": "TXN002",
+      "status": "approved",
+      "cross_border": false,
+      "risk_score": 50,
+      "needs_review": true,
+      "reason": null,
+      "compliance_flags": [
+        "CTR"
+      ],
+      "cross_border_compliance_flags": []
+    },
+    {
+      "transaction_id": "TXN003",
+      "status": "approved",
+      "cross_border": false,
+      "risk_score": 0,
+      "needs_review": false,
+      "reason": null,
+      "compliance_flags": [],
+      "cross_border_compliance_flags": []
+    },
+    {
+      "transaction_id": "TXN004",
+      "status": "approved",
+      "cross_border": true,
+      "risk_score": 40,
+      "needs_review": true,
+      "reason": null,
+      "compliance_flags": [],
+      "cross_border_compliance_flags": [
+        "EDD"
+      ]
+    },
+    {
+      "transaction_id": "TXN005",
+      "status": "approved",
+      "cross_border": false,
+      "risk_score": 50,
+      "needs_review": true,
+      "reason": null,
+      "compliance_flags": [
+        "CTR"
+      ],
+      "cross_border_compliance_flags": []
+    },
+    {
+      "transaction_id": "TXN006",
+      "status": "rejected",
+      "cross_border": false,
+      "risk_score": null,
+      "needs_review": false,
+      "reason": "unsupported currency: XYZ",
+      "compliance_flags": [],
+      "cross_border_compliance_flags": []
+    },
+    {
+      "transaction_id": "TXN007",
+      "status": "rejected",
+      "cross_border": true,
+      "risk_score": null,
+      "needs_review": false,
+      "reason": "amount must be positive",
+      "compliance_flags": [],
+      "cross_border_compliance_flags": []
+    },
+    {
+      "transaction_id": "TXN008",
+      "status": "approved",
+      "cross_border": false,
+      "risk_score": 0,
+      "needs_review": false,
+      "reason": null,
+      "compliance_flags": [],
+      "cross_border_compliance_flags": []
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "message_id": "69ad339b-4505-42d6-9edd-7b27e3eaacd3",
+  "timestamp": "2026-08-07T14:34:40Z",
+  "source_agent": "compliance_checker",
+  "target_agent": "results",
+  "message_type": "transaction",
+  "data": {
+    "transaction_id": "TXN002",
+    "timestamp": "2026-03-16T09:15:00Z",
+    "source_account": "ACC-****",
+    "destination_account": "ACC-****",
+    "amount": "25000.00",
+    "currency": "USD",
+    "transaction_type": "wire_transfer",
+    "description": "Equipment purchase",
+    "metadata": {
+      "channel": "branch",
+      "country": "US"
+    },
+    "cross_border": false,
+    "cross_border_flags": [],
+    "status": "approved",
+    "reason": null,
+    "risk_score": 50,
+    "risk_flags": [
+      "high_value"
+    ],
+    "fraud_review": true,
+    "cross_border_review": false,
+    "needs_review": true,
+    "compliance_flags": [
+      "CTR"
+    ],
+    "cross_border_compliance_flags": []
+  }
+}

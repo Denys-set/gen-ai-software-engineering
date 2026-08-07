@@ -1,0 +1,38 @@
+{
+  "message_id": "15f7979f-bfbb-4472-a15a-d88eda6845aa",
+  "timestamp": "2026-08-07T14:34:40Z",
+  "source_agent": "compliance_checker",
+  "target_agent": "results",
+  "message_type": "transaction",
+  "data": {
+    "transaction_id": "TXN004",
+    "timestamp": "2026-03-16T02:47:00Z",
+    "source_account": "ACC-****",
+    "destination_account": "ACC-****",
+    "amount": "500.00",
+    "currency": "EUR",
+    "transaction_type": "transfer",
+    "description": "Invoice #4471",
+    "metadata": {
+      "channel": "api",
+      "country": "DE"
+    },
+    "cross_border": true,
+    "cross_border_flags": [
+      "cross_border:DE"
+    ],
+    "status": "approved",
+    "reason": null,
+    "risk_score": 40,
+    "risk_flags": [
+      "off_hours"
+    ],
+    "fraud_review": false,
+    "cross_border_review": true,
+    "needs_review": true,
+    "compliance_flags": [],
+    "cross_border_compliance_flags": [
+      "EDD"
+    ]
+  }
+}

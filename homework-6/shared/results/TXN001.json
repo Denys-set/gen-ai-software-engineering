@@ -1,0 +1,32 @@
+{
+  "message_id": "e965b3f7-b2a1-45e1-8412-b05bbd2b7f4a",
+  "timestamp": "2026-08-07T14:34:40Z",
+  "source_agent": "compliance_checker",
+  "target_agent": "results",
+  "message_type": "transaction",
+  "data": {
+    "transaction_id": "TXN001",
+    "timestamp": "2026-03-16T09:00:00Z",
+    "source_account": "ACC-****",
+    "destination_account": "ACC-****",
+    "amount": "1500.00",
+    "currency": "USD",
+    "transaction_type": "transfer",
+    "description": "Monthly rent payment",
+    "metadata": {
+      "channel": "online",
+      "country": "US"
+    },
+    "cross_border": false,
+    "cross_border_flags": [],
+    "status": "approved",
+    "reason": null,
+    "risk_score": 0,
+    "risk_flags": [],
+    "fraud_review": false,
+    "cross_border_review": false,
+    "needs_review": false,
+    "compliance_flags": [],
+    "cross_border_compliance_flags": []
+  }
+}
