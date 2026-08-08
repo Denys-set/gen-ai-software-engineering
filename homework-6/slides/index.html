@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Agent Banking Pipeline — Homework 6 · Denys Kubrakov</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" id="theme">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+
+  <style>
+    :root{
+      --accent:#4ade80;      /* banking green */
+      --accent2:#fbbf24;     /* gold  */
+      --ink:#eef2f6;
+      --muted:#9aa4af;
+      --panel:#0d1117;
+      --line:#2a323c;
+    }
+    .reveal{ font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); }
+    .reveal .slides{ text-align:left; }
+
+    /* Type scale — generous, readable from the back of a room */
+    .reveal h1{ color:var(--accent); font-size:2.4em; line-height:1.05; letter-spacing:-1px; text-transform:none; }
+    .reveal h2{ color:var(--accent); font-size:1.5em; letter-spacing:-.5px; text-transform:none; margin-bottom:.5em; }
+    .reveal h3{ color:var(--ink); font-size:1em; text-transform:none; }
+    .reveal p,.reveal li{ font-size:.92em; line-height:1.4; }
+    .reveal .lead{ color:var(--muted); }
+    .reveal em{ color:var(--accent2); font-style:normal; font-weight:600; }
+    .reveal strong{ color:var(--accent2); }
+    .reveal ul{ margin-left:.3em; } .reveal li{ margin:.45em 0; }
+
+    /* Kicker label above headings */
+    .reveal .kicker{ color:var(--accent); font-size:.55em; letter-spacing:3px; text-transform:uppercase; margin-bottom:.4em; font-weight:700; }
+
+    /* Pills */
+    .reveal .tag{ display:inline-block; background:rgba(74,222,128,.12); color:var(--accent);
+      border:1px solid rgba(74,222,128,.4); border-radius:999px; padding:4px 14px; font-size:.42em;
+      margin:4px 3px; font-family:"SF Mono",Menlo,monospace; }
+
+    /* Code / ASCII panels */
+    .reveal code{ font-family:"SF Mono","JetBrains Mono",Menlo,monospace; }
+    .reveal pre{ box-shadow:none; width:100%; }
+    .reveal pre code{ font-size:.62em; line-height:1.4; border-radius:10px; padding:16px 20px; }
+    .reveal pre.ascii{ background:var(--panel); color:#9ecbff; border:1px solid var(--line); border-radius:10px;
+      padding:16px 22px; line-height:1.3; font-family:"SF Mono",Menlo,monospace; font-size:.6em; white-space:pre; overflow:auto; }
+
+    /* Two-column layout: text | visual */
+    .reveal .split{ display:flex; gap:34px; align-items:center; }
+    .reveal .split .txt{ flex:1; } .reveal .split .vis{ flex:1.15; text-align:center; }
+    .reveal .split.narrow .vis{ flex:.9; }
+
+    /* Screenshots — hero-sized, framed, clickable to full-res */
+    .reveal .shot{ width:100%; max-height:520px; object-fit:contain; border:1px solid var(--line);
+      border-radius:10px; background:#010409; box-shadow:0 12px 40px rgba(0,0,0,.55); }
+    .reveal a.shotlink{ display:block; } .reveal a.shotlink:hover .shot{ border-color:var(--accent); }
+    .reveal .cap{ font-size:.5em; color:var(--muted); margin-top:8px; }
+    .reveal .cap b{ color:var(--accent); font-weight:600; }
+
+    /* Tables */
+    .reveal table{ font-size:.7em; border-collapse:collapse; }
+    .reveal th{ color:var(--accent); border-bottom:2px solid var(--accent); padding:.35em .7em; }
+    .reveal td{ padding:.3em .7em; border-bottom:1px solid var(--line); }
+    .reveal .ok{ color:var(--accent); font-weight:600; } .reveal .no{ color:#f85149; font-weight:600; }
+
+    /* Big stat */
+    .reveal .stat{ font-size:2.4em; color:var(--accent2); font-weight:800; line-height:1; }
+    .reveal .statgrid{ display:flex; gap:40px; justify-content:center; text-align:center; margin:.3em 0; }
+    .reveal .statgrid .n{ font-size:2.1em; color:var(--accent2); font-weight:800; }
+    .reveal .statgrid .l{ font-size:.5em; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+
+    .reveal .footer{ position:fixed; bottom:10px; left:18px; font-size:12px; color:#5a626b; z-index:30; }
+    .reveal section{ height:100%; }
+    .reveal .checks li{ list-style:none; margin:.35em 0; }
+    .reveal .checks li::before{ content:"✅ "; }
+  </style>
+</head>
+<body>
+<div class="footer">Multi-Agent Banking Pipeline · Denys Kubrakov</div>
+<div class="reveal"><div class="slides">
+
+  <!-- 01 · TITLE ------------------------------------------------------------->
+  <section data-background-gradient="linear-gradient(135deg,#0d1117 0%,#0f2419 100%)">
+    <div style="text-align:center">
+      <div class="kicker">Final Capstone · Homework 6</div>
+      <h1>Multi-Agent Banking<br>Transaction Pipeline</h1>
+      <p class="lead" style="font-size:1.05em; margin-top:.4em">
+        AI agents that <em>build</em> a system — and agents that <em>run</em> it.</p>
+      <p style="margin-top:1em"><strong>Denys Kubrakov</strong></p>
+      <p>
+        <span class="tag">Python 3.12</span>
+        <span class="tag">decimal.Decimal</span>
+        <span class="tag">file-based JSON agents</span>
+        <span class="tag">2 × MCP</span>
+        <span class="tag">94% test coverage</span>
+      </p>
+    </div>
+    <aside class="notes">Capstone: four meta-agents build a banking pipeline of three cooperating runtime agents. Everything is verified end-to-end.</aside>
+  </section>
+
+  <!-- 02 · PROBLEM ----------------------------------------------------------->
+  <section>
+    <div class="kicker">The problem</div>
+    <h2>Payments must be right — every time</h2>
+    <div class="split">
+      <div class="txt">
+        <p>A bank processes a raw transaction and must decide, <em>auditable</em>, in order:</p>
+        <ul>
+          <li>Is it <strong>well-formed</strong>? (fields, amount, currency)</li>
+          <li>Is it <strong>risky</strong>? (high-value, off-hours, cross-border)</li>
+          <li>Is it <strong>compliant</strong>? (reporting, sanctions)</li>
+        </ul>
+        <p class="lead">…without ever losing money to rounding, leaking account numbers, or dropping a record.</p>
+      </div>
+      <div class="vis">
+        <pre class="ascii">{
+  "transaction_id": "TXN005",
+  "amount": "75000.00",
+  "currency": "USD",
+  "source_account": "ACC-1005",
+  "timestamp": "…T10:00:00Z",
+  "metadata": { "country": "US" }
+}
+        ↓  approve? reject? why?</pre>
+      </div>
+    </div>
+    <aside class="notes">Frame it as a decision chain that must be correct, safe, and fully auditable.</aside>
+  </section>
+
+  <!-- 03 · THE BIG IDEA ------------------------------------------------------>
+  <section>
+    <div class="kicker">The idea</div>
+    <h2>Two layers of agents</h2>
+    <div class="split">
+      <div class="txt">
+        <h3 style="color:var(--accent)">① Meta-agents — build the system</h3>
+        <p class="lead">Spec → Code → Tests → Docs. Four AI roles that produce the pipeline.</p>
+      </div>
+      <div class="txt">
+        <h3 style="color:var(--accent)">② Runtime agents — run the bank</h3>
+        <p class="lead">Validator → Fraud → Compliance. Three programs that process real transactions.</p>
+      </div>
+    </div>
+    <pre class="ascii" style="margin-top:18px">  Meta-agents  ═══build═══▶   Runtime pipeline   ═══process═══▶   Auditable outcome
+  (Spec/Code/Tests/Docs)     (3 cooperating agents)            (approved / rejected)</pre>
+    <aside class="notes">This is the key mental model. The deliverable is BOTH the four builders and the running system.</aside>
+  </section>
+
+  <!-- 04 · ARCHITECTURE ------------------------------------------------------>
+  <section>
+    <div class="kicker">Architecture</div>
+    <h2>One integrator, three agents, four mailboxes</h2>
+    <pre class="ascii">                     sample-transactions.json
+                               │
+                        ┌──────────────┐
+                        │  integrator  │   run_pipeline()
+                        └──────┬───────┘
+                               ▼        wrap each record in a JSON envelope
+       shared/input ─▶ processing ─▶ output ─▶ results     (a file's folder = its state)
+                               │
+   transaction_validator ─▶ fraud_detector ─▶ compliance_checker
+           │ reject                                      │ approve / reject
+           └─────────────────────┬────────────────────────┘
+                                 ▼
+             shared/results/&lt;TXN&gt;.json  +  summary.json  +  audit.log</pre>
+    <p class="lead" style="font-size:.8em">A rejection short-circuits the rest — yet the transaction still lands in <code>results/</code> with its reason.</p>
+    <aside class="notes">Directory = state. Atomic file moves. Everything ends up in results/, even rejects.</aside>
+  </section>
+
+  <!-- 05 · MESSAGE PROTOCOL -------------------------------------------------->
+  <section>
+    <div class="kicker">How agents cooperate</div>
+    <h2>They pass JSON files — nothing shared in memory</h2>
+    <div class="split">
+      <div class="txt">
+        <ul>
+          <li>Standard <strong>envelope</strong> per message (id, timestamp, source, target, payload)</li>
+          <li><strong>Atomic writes</strong> — temp file + <code>os.replace</code>; no half-written reads</li>
+          <li>The <code>data</code> block <strong>accumulates</strong> as it flows downstream</li>
+        </ul>
+      </div>
+      <div class="vis" style="text-align:left">
+        <pre><code data-trim class="language-json">{
+  "message_id": "uuid4…",
+  "timestamp": "2026-03-16T10:00:00Z",
+  "source_agent": "transaction_validator",
+  "target_agent": "fraud_detector",
+  "data": {
+    "transaction_id": "TXN001",
+    "amount": "1500.00", "currency": "USD",
+    "status": "validated",
+    "cross_border": false, "risk_score": 0
+  }
+}</code></pre>
+      </div>
+    </div>
+    <aside class="notes">File-based message passing makes the whole run inspectable and testable.</aside>
+  </section>
+
+  <!-- 06 · THE THREE AGENTS -------------------------------------------------->
+  <section>
+    <div class="kicker">The runtime pipeline</div>
+    <h2>Three agents, three decisions</h2>
+    <table style="width:100%">
+      <tr><th>Agent</th><th>Decision</th><th>Rules it enforces</th></tr>
+      <tr>
+        <td><strong>Validator</strong></td>
+        <td class="ok">valid → fraud<br><span class="no">else reject</span></td>
+        <td>required fields · positive <code>Decimal</code> · ISO-4217 whitelist · sets <code>cross_border</code> once</td>
+      </tr>
+      <tr>
+        <td><strong>Fraud detector</strong></td>
+        <td>risk score<br>+ review flags</td>
+        <td>+50 if &gt; $10k · +20 off-hours [0–6)h · +20 cross-border · review at ≥ 50</td>
+      </tr>
+      <tr>
+        <td><strong>Compliance</strong></td>
+        <td class="ok">approve /<br><span class="no">reject</span> + reason</td>
+        <td>CTR flag ≥ $10k · cross-border EDD · sanctions screen · reject if risk ≥ 70</td>
+      </tr>
+    </table>
+    <p class="lead" style="font-size:.8em; margin-top:14px">Cross-border risk lives in fields <em>separate</em> from domestic risk — a reviewer sees <em>why</em> a txn was flagged.</p>
+    <aside class="notes">Each agent is a pure function at its core (score_transaction, evaluate) — trivially unit-testable.</aside>
+  </section>
+
+  <!-- 07 · BANKING-SAFE ------------------------------------------------------>
+  <section>
+    <div class="kicker">Correctness by construction</div>
+    <h2>Banking-safe guarantees</h2>
+    <div class="split">
+      <div class="txt">
+        <ul>
+          <li>💰 Money is <strong>decimal.Decimal</strong> from string — <span class="no">never float</span></li>
+          <li>💱 Currency is an <strong>ISO-4217</strong> whitelist (<code>XYZ</code> → rejected)</li>
+          <li>🔒 <strong>PII masked</strong>: <code>ACC-1005</code> → <code>ACC-****</code> before any log or result</li>
+          <li>📝 Append-only <strong>audit log</strong> — ISO-8601 UTC, agent, txn id, outcome</li>
+        </ul>
+      </div>
+      <div class="vis" style="text-align:left">
+        <pre class="ascii">audit.log — 28 lines · 0 PII leaks
+──────────────────────────────────
+… | validator  | TXN001 | validated
+… | fraud      | TXN002 | scored:50:high_value
+… | compliance | TXN006 | rejected:unsupported_ccy
+… | integrator | TXN007 | finalized:rejected</pre>
+        <p class="cap">Country codes are jurisdiction, not PII — safe to log.</p>
+      </div>
+    </div>
+    <aside class="notes">These four rules are the non-negotiables from the spec and agents.md.</aside>
+  </section>
+
+  <!-- 08 · LIVE DEMO / RESULTS ---------------------------------------------->
+  <section>
+    <div class="kicker">Live run · python integrator.py</div>
+    <h2>8 in → every one accounted for</h2>
+    <div class="statgrid" style="margin-bottom:12px">
+      <div><div class="n">8</div><div class="l">processed</div></div>
+      <div><div class="n ok" style="color:var(--accent)">6</div><div class="l">approved</div></div>
+      <div><div class="n no" style="color:#f85149">2</div><div class="l">rejected</div></div>
+      <div><div class="n">3</div><div class="l">flagged</div></div>
+      <div><div class="n">2</div><div class="l">cross-border</div></div>
+    </div>
+    <div class="split narrow">
+      <div class="txt">
+        <table>
+          <tr><th>TXN</th><th>Status</th><th>Why</th></tr>
+          <tr><td>TXN002 / 005</td><td class="ok">approved</td><td>high-value → CTR</td></tr>
+          <tr><td>TXN004</td><td class="ok">approved</td><td><em>cross-border</em> + off-hours → EDD, flagged</td></tr>
+          <tr><td>TXN006</td><td class="no">rejected</td><td>currency <code>XYZ</code></td></tr>
+          <tr><td>TXN007</td><td class="no">rejected</td><td>amount ≤ 0 (<em>cross-border</em>, still logged)</td></tr>
+        </table>
+      </div>
+      <div class="vis">
+        <a class="shotlink" href="screenshots/pipeline-run.png" target="_blank" rel="noopener">
+          <img class="shot" src="screenshots/pipeline-run.png" alt="pipeline run terminal output"></a>
+        <div class="cap"><b>pipeline-run.png</b> · click to open full-size</div>
+      </div>
+    </div>
+    <aside class="notes">TXN007 is the interesting case: cross-border AND invalid — validation wins, but cross_border is still recorded.</aside>
+  </section>
+
+  <!-- 09 · META-AGENTS (how it was built) ------------------------------------>
+  <section>
+    <div class="kicker">How it was built</div>
+    <h2>Four meta-agents, one job each</h2>
+    <div class="split">
+      <div class="txt">
+        <ul>
+          <li><strong>① Spec</strong> — writes <code>specification.md</code> via the <code>/write-spec</code> skill</li>
+          <li><strong>② Code</strong> — generates the pipeline; looks up docs with <em>context7</em></li>
+          <li><strong>③ Tests</strong> — pytest suite + the coverage-gate hook</li>
+          <li><strong>④ Docs</strong> — README + HOWTORUN</li>
+        </ul>
+        <p class="lead" style="font-size:.8em">Spec is authoritative — code never invents rules.</p>
+      </div>
+      <div class="vis">
+        <a class="shotlink" href="screenshots/write-spec-1.png" target="_blank" rel="noopener">
+          <img class="shot" src="screenshots/write-spec-1.png" alt="/write-spec skill generating the specification"></a>
+        <div class="cap"><b>/write-spec</b> generating the spec · full sequence in appendix</div>
+      </div>
+    </div>
+    <aside class="notes">The four meta-agents map 1:1 to the graded roles. /write-spec is a real slash command.</aside>
+  </section>
+
+  <!-- 10 · SKILLS + HOOK ----------------------------------------------------->
+  <section>
+    <div class="kicker">Automation</div>
+    <h2>Skills &amp; a coverage gate that bites</h2>
+    <div class="split">
+      <div class="txt">
+        <p><strong>3 slash commands</strong></p>
+        <ul style="font-size:.85em">
+          <li><code>/write-spec</code> · <code>/run-pipeline</code> · <code>/validate-transactions</code></li>
+        </ul>
+        <p><strong>Coverage gate — 2 layers, fail-closed</strong></p>
+        <ul style="font-size:.85em">
+          <li>git <code>pre-push</code> hook</li>
+          <li>Claude Code <code>PreToolUse</code> hook — <em>denies</em> <code>git push</code> when coverage &lt; 80%</li>
+        </ul>
+        <p class="lead" style="font-size:.78em">Verified: 99% threshold → blocked · normal command → allowed.</p>
+      </div>
+      <div class="vis">
+        <a class="shotlink" href="screenshots/hook-trigger.png" target="_blank" rel="noopener">
+          <img class="shot" src="screenshots/hook-trigger.png" alt="coverage-gate hook blocking a push"></a>
+        <div class="cap"><b>hook-trigger.png</b> · gate blocking a push</div>
+      </div>
+    </div>
+    <aside class="notes">The gate is a real quality wall — not advisory. Two independent layers over one script.</aside>
+  </section>
+
+  <!-- 11 · MCP --------------------------------------------------------------->
+  <section>
+    <div class="kicker">MCP integration</div>
+    <h2>Two servers: docs in, status out</h2>
+    <div class="split">
+      <div class="txt">
+        <p><strong>context7</strong> <span class="lead">— docs used while coding</span></p>
+        <ul style="font-size:.82em">
+          <li><code>/python/cpython</code> → Decimal quantize / ROUND_HALF_UP</li>
+          <li><code>/prefecthq/fastmcp</code> → v3 <code>@mcp.tool</code> style</li>
+        </ul>
+        <p><strong>pipeline-status</strong> <span class="lead">— custom FastMCP</span></p>
+        <ul style="font-size:.82em">
+          <li><code>get_transaction_status(id)</code> · <code>list_pipeline_results()</code></li>
+          <li>resource <code>pipeline://summary</code></li>
+        </ul>
+        <p class="lead" style="font-size:.78em">PII-safe: whitelist projection — txn id + outcome only.</p>
+      </div>
+      <div class="vis">
+        <a class="shotlink" href="screenshots/mcp-interaction.png" target="_blank" rel="noopener">
+          <img class="shot" src="screenshots/mcp-interaction.png" alt="MCP interaction — context7 and custom server"></a>
+        <div class="cap"><b>mcp-interaction.png</b> · second capture in appendix</div>
+      </div>
+    </div>
+    <aside class="notes">context7 fed real library IDs (documented in research-notes.md); the custom server makes the pipeline queryable.</aside>
+  </section>
+
+  <!-- 12 · TESTS ------------------------------------------------------------->
+  <section>
+    <div class="kicker">Evidence</div>
+    <h2>Tested, not asserted</h2>
+    <div class="split">
+      <div class="txt">
+        <div class="statgrid" style="justify-content:flex-start; margin-bottom:14px">
+          <div><div class="n">52</div><div class="l">tests pass</div></div>
+          <div><div class="n">94%</div><div class="l">coverage</div></div>
+        </div>
+        <ul style="font-size:.85em">
+          <li>Unit tests per agent + the MCP server</li>
+          <li>1 integration test — the full pipeline</li>
+          <li>Isolated from real <code>shared/</code> via <code>tmp_path</code></li>
+          <li>Gate needs 80%, aim 90% — <span class="ok">both cleared</span></li>
+        </ul>
+      </div>
+      <div class="vis">
+        <a class="shotlink" href="screenshots/test-coverage.png" target="_blank" rel="noopener">
+          <img class="shot" src="screenshots/test-coverage.png" alt="coverage report showing 94%"></a>
+        <div class="cap"><b>test-coverage.png</b></div>
+      </div>
+    </div>
+    <aside class="notes">94.20% total; per-module 89–99%. Clears the gate comfortably.</aside>
+  </section>
+
+  <!-- 13 · SUCCESS CRITERIA -------------------------------------------------->
+  <section data-background-gradient="linear-gradient(135deg,#0f2419 0%,#0d1117 100%)">
+    <div class="kicker">Self-check</div>
+    <h2>All 11 criteria — verified live</h2>
+    <div class="split">
+      <ul class="checks txt" style="font-size:.8em">
+        <li>Spec: 5 sections + task per agent</li>
+        <li>Spec-generating skill present</li>
+        <li>Pipeline runs, no errors</li>
+        <li>Valid JSON to <code>shared/</code></li>
+        <li><code>/run-pipeline</code> executes</li>
+        <li>Coverage gate blocks &lt; 80%</li>
+      </ul>
+      <ul class="checks txt" style="font-size:.8em">
+        <li>Both MCP servers respond</li>
+        <li>Coverage ≥ 80% (94%)</li>
+        <li>README: name + ASCII diagram</li>
+        <li>HOWTORUN numbered steps</li>
+        <li>Screenshots in repo + PR</li>
+        <li><strong>Nothing left ❌</strong></li>
+      </ul>
+    </div>
+    <aside class="notes">Every row re-run this session — pipeline, JSON, gate exit codes, MCP calls, coverage.</aside>
+  </section>
+
+  <!-- 14 · CLOSE ------------------------------------------------------------->
+  <section data-background-gradient="linear-gradient(135deg,#0d1117 0%,#0f2419 100%)">
+    <div style="text-align:center">
+      <div class="kicker">Takeaways</div>
+      <h2 style="font-size:1.7em">What made it work</h2>
+      <ul style="display:inline-block; text-align:left; font-size:.92em">
+        <li><em>Spec-first</em> — one authoritative contract</li>
+        <li><em>Agents as files</em> — directory = state, fully auditable</li>
+        <li><em>Correctness enforced</em> — Decimal, ISO-4217, PII masking</li>
+        <li><em>Quality gated</em> — push blocked below 80% (94% actual)</li>
+        <li><em>Queryable</em> — custom FastMCP + context7</li>
+      </ul>
+      <p style="margin-top:1em"><span class="tag">github.com/Denys-set/gen-ai-software-engineering · homework-6</span></p>
+      <p class="lead" style="font-size:.8em">Thank you — questions?</p>
+    </div>
+  </section>
+
+  <!-- 15 · APPENDIX (vertical stack) ---------------------------------------->
+  <section>
+    <section>
+      <div class="kicker">Appendix</div>
+      <h2>All screenshots ↓</h2>
+      <p class="lead">Press <kbd>↓</kbd> to page through the full evidence set. Every image opens full-size on click.</p>
+    </section>
+    <section>
+      <h3>Spec generation — <code>/write-spec</code> (1 / 4)</h3>
+      <a class="shotlink" href="screenshots/write-spec-1.png" target="_blank" rel="noopener"><img class="shot" src="screenshots/write-spec-1.png" alt="write-spec 1"></a>
+    </section>
+    <section>
+      <h3>Spec generation (2 / 4)</h3>
+      <a class="shotlink" href="screenshots/write-spec-2.png" target="_blank" rel="noopener"><img class="shot" src="screenshots/write-spec-2.png" alt="write-spec 2"></a>
+    </section>
+    <section>
+      <h3>Spec generation (3 / 4)</h3>
+      <a class="shotlink" href="screenshots/write-spec-3.png" target="_blank" rel="noopener"><img class="shot" src="screenshots/write-spec-3.png" alt="write-spec 3"></a>
+    </section>
+    <section>
+      <h3>Spec generation (4 / 4)</h3>
+      <a class="shotlink" href="screenshots/write-spec-4.png" target="_blank" rel="noopener"><img class="shot" src="screenshots/write-spec-4.png" alt="write-spec 4"></a>
+    </section>
+    <section>
+      <h3><code>/run-pipeline</code> skill executing</h3>
+      <a class="shotlink" href="screenshots/skill-run-pipeline.png" target="_blank" rel="noopener"><img class="shot" src="screenshots/skill-run-pipeline.png" alt="run-pipeline skill"></a>
+    </section>
+    <section>
+      <h3>MCP interaction — second capture</h3>
+      <a class="shotlink" href="screenshots/mcp-interaction-2.png" target="_blank" rel="noopener"><img class="shot" src="screenshots/mcp-interaction-2.png" alt="mcp interaction 2"></a>
+    </section>
+  </section>
+
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    hash:true, slideNumber:'c/t', transition:'slide',
+    controls:true, progress:true, center:true,
+    plugins:[ RevealHighlight, RevealNotes ],
+  });
+</script>
+</body>
+</html>
