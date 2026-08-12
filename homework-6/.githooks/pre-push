@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# git pre-push hook — layer 1 of the coverage gate.
+# Aborts the push when scripts/coverage_gate.sh exits non-zero (coverage < 80% / tests fail).
+# Enable with:  git config core.hooksPath homework-6/.githooks   (run from the repo root)
+#
+# git invokes pre-push with the remote name/URL as args and ref lines on stdin; we ignore both
+# and always run the gate (git only fires pre-push on an actual push).
+set -uo pipefail
+
+HOOK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+GATE="$HOOK_DIR/../scripts/coverage_gate.sh"
+
+if [ ! -x "$GATE" ]; then
+  echo "[pre-push] coverage gate not found/executable at $GATE — push blocked (fail closed)" >&2
+  exit 1
+fi
+
+exec "$GATE"
