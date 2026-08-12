@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multi-Agent Banking Pipeline — Homework 6 · Denys Kubrakov</title>
+  <title>Extending the Banking Pipeline — Homework 6 · Pipeline Quartet</title>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css" id="theme">
@@ -11,19 +11,11 @@
 
   <style>
     :root{
-      --navy:#0b2545;      /* headings */
-      --ink:#1f2a37;       /* body */
-      --muted:#64748b;
-      --accent:#059669;    /* banking green */
-      --accent2:#b45309;   /* amber accent */
-      --soft:#d1fae5;      /* light green */
-      --soft2:#fef3c7;     /* light amber */
-      --bg:#ffffff;
-      --panel:#0f172a;     /* dark cards */
-      --line:#e2e8f0;
+      --navy:#0b2545; --ink:#1f2a37; --muted:#64748b;
+      --accent:#059669; --accent2:#b45309;
+      --soft:#d1fae5; --bg:#ffffff; --panel:#0f172a; --line:#e2e8f0;
       --ok:#059669; --no:#dc2626;
     }
-
     .reveal{ font-family:"Segoe UI",-apple-system,Roboto,Helvetica,Arial,sans-serif; color:var(--ink); font-size:24px; }
     .reveal .slides{ text-align:left; }
     .reveal .slides section{
@@ -33,79 +25,61 @@
     }
     .reveal .slides section.title-slide{ justify-content:center; background:linear-gradient(135deg,#0b2545 0%,#0f3d2e 100%); }
 
-    /* ---- Slide master ---- */
     .kick{ color:var(--accent); font-size:15px; font-weight:800; letter-spacing:3px; text-transform:uppercase; }
     .reveal h2.ttl{ color:var(--navy); font-size:40px; font-weight:800; letter-spacing:-.5px; margin:.15em 0 .05em; text-transform:none; line-height:1.1; }
     .ttl-underline{ width:74px; height:5px; background:var(--accent); border-radius:3px; margin:10px 0 22px; }
     .body{ flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center; }
     .reveal p,.reveal li{ font-size:23px; line-height:1.45; color:var(--ink); }
+    .lead{ color:var(--muted); }
     .reveal strong{ color:var(--accent2); font-weight:700; }
     .reveal em{ color:var(--accent); font-style:normal; font-weight:700; }
-    .lead{ color:var(--muted); }
     .reveal ul{ margin-left:.2em; } .reveal li{ margin:.4em 0; }
     .foot{ position:absolute; bottom:20px; left:62px; right:62px; display:flex; justify-content:space-between;
       font-size:14px; color:#94a3b8; border-top:1px solid var(--line); padding-top:8px; }
 
-    /* ---- Pills / tags ---- */
     .tag{ display:inline-block; background:rgba(255,255,255,.12); color:#eafff5; border:1px solid rgba(255,255,255,.35);
       border-radius:999px; padding:6px 15px; font-size:15px; margin:5px 4px; }
     .chip{ display:inline-block; background:var(--soft); color:#065f46; border-radius:8px; padding:7px 14px;
       font-size:16px; font-weight:700; font-family:"SF Mono",Menlo,monospace; margin:3px; }
+    .pill-new{ background:var(--accent); color:#fff; border-radius:6px; font-size:12px; font-weight:800; padding:2px 8px; margin-left:6px; vertical-align:middle; }
 
-    /* ---- Columns ---- */
     .split{ display:flex; gap:40px; align-items:center; }
-    .split>.c{ flex:1; } .split>.c.wide{ flex:1.25; }
+    .split>.c{ flex:1; } .split>.c.wide{ flex:1.2; }
 
-    /* ---- Diagram nodes & arrows (SmartArt-style) ---- */
     .row{ display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:nowrap; }
     .node{ background:#fff; border:1.5px solid var(--line); border-top:4px solid var(--accent);
-      border-radius:12px; padding:14px 18px; text-align:center; box-shadow:0 3px 12px rgba(11,37,69,.08); }
+      border-radius:12px; padding:13px 17px; text-align:center; box-shadow:0 3px 12px rgba(11,37,69,.08); }
     .node.amber{ border-top-color:var(--accent2); }
     .node.navy{ background:var(--navy); border-color:var(--navy); }
     .node.navy .t{ color:#fff; } .node.navy .s{ color:#b7c4d6; }
-    .node .t{ font-weight:800; color:var(--navy); font-size:20px; }
-    .node .s{ font-size:14px; color:var(--muted); margin-top:5px; line-height:1.3; }
-    .arrow{ color:var(--accent); font-size:30px; font-weight:800; }
-    .arrow.down{ display:block; text-align:center; margin:6px 0; }
-    .stagelabel{ font-size:15px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px; }
+    .node.ghost{ opacity:.5; }
+    .node .t{ font-weight:800; color:var(--navy); font-size:19px; }
+    .node .s{ font-size:13px; color:var(--muted); margin-top:4px; line-height:1.3; }
+    .arrow{ color:var(--accent); font-size:26px; font-weight:800; }
+    .stagelabel{ font-size:14px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px; }
 
-    /* ---- Cards (code / audit) ---- */
-    .card{ background:var(--panel); border-radius:12px; padding:18px 22px; box-shadow:0 8px 26px rgba(11,37,69,.18); }
+    .card{ background:var(--panel); border-radius:12px; padding:16px 20px; box-shadow:0 8px 26px rgba(11,37,69,.18); }
     .card pre{ margin:0; box-shadow:none; }
-    .card pre code{ font-size:17px; line-height:1.5; background:transparent; padding:0; }
-    .mono{ font-family:"SF Mono",Menlo,monospace; }
-    .audit{ background:var(--panel); color:#7ee2b8; border-radius:12px; padding:16px 20px; font-family:"SF Mono",Menlo,monospace;
-      font-size:15px; line-height:1.7; box-shadow:0 8px 26px rgba(11,37,69,.18); }
-    .audit .k{ color:#8b9bb4; }
+    .card pre code{ font-size:16px; line-height:1.5; background:transparent; padding:0; }
 
-    /* ---- Tables ---- */
-    table.clean{ width:100%; border-collapse:collapse; font-size:20px; }
-    table.clean th{ background:var(--navy); color:#fff; text-align:left; padding:12px 16px; font-weight:700; }
+    table.clean{ width:100%; border-collapse:collapse; font-size:19px; }
+    table.clean th{ background:var(--navy); color:#fff; text-align:left; padding:11px 15px; font-weight:700; }
     table.clean th:first-child{ border-radius:8px 0 0 0; } table.clean th:last-child{ border-radius:0 8px 0 0; }
-    table.clean td{ padding:12px 16px; border-bottom:1px solid var(--line); vertical-align:top; }
+    table.clean td{ padding:11px 15px; border-bottom:1px solid var(--line); vertical-align:top; }
     table.clean tr:nth-child(even) td{ background:#f1f6fb; }
     .ok{ color:var(--ok); font-weight:700; } .no{ color:var(--no); font-weight:700; }
 
-    /* ---- Stats ---- */
-    .stats{ display:flex; gap:34px; }
-    .stats .box{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px 26px; text-align:center;
+    .stats{ display:flex; gap:28px; }
+    .stats .box{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px 24px; text-align:center;
       box-shadow:0 3px 12px rgba(11,37,69,.06); flex:1; }
-    .stats .n{ font-size:46px; font-weight:800; color:var(--navy); line-height:1; }
-    .stats .n.g{ color:var(--ok); } .stats .n.r{ color:var(--no); }
-    .stats .l{ font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:6px; }
+    .stats .n{ font-size:44px; font-weight:800; color:var(--navy); line-height:1; }
+    .stats .n.g{ color:var(--ok); }
+    .stats .l{ font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:6px; }
 
-    /* ---- Screenshots ---- */
-    .shot{ display:block; margin:0 auto; max-width:100%; max-height:520px; object-fit:contain;
-      border:1px solid #cbd5e1; border-radius:10px; background:#0b1220; box-shadow:0 14px 40px rgba(11,37,69,.22); }
-    .shotbig{ max-height:540px; }
-    a.shotlink{ display:block; } a.shotlink:hover .shot{ border-color:var(--accent); }
     .cap{ text-align:center; font-size:15px; color:var(--muted); margin-top:12px; }
     .cap b{ color:var(--accent); }
-
-    /* ---- Checklist ---- */
-    ul.checks{ list-style:none; margin:0; } ul.checks li{ font-size:21px; margin:.32em 0; }
+    ul.checks{ list-style:none; margin:0; } ul.checks li{ font-size:20px; margin:.3em 0; }
     ul.checks li::before{ content:"✓"; color:var(--ok); font-weight:800; margin-right:10px; }
-
     .center{ text-align:center; }
     .reveal .slide-number{ background:transparent; color:#94a3b8; font-size:14px; right:64px; bottom:20px; }
   </style>
@@ -116,358 +90,81 @@
   <!-- 01 · TITLE -->
   <section class="title-slide">
     <div class="center">
-      <div class="kick" style="color:#6ee7b7">Final Capstone · Homework 6</div>
-      <h1 style="color:#fff; font-size:56px; font-weight:800; margin:.25em 0 .1em; letter-spacing:-1px;">Multi-Agent Banking<br>Transaction Pipeline</h1>
-      <p style="color:#c9d6e5; font-size:26px; margin:.2em 0 1em;">AI agents that <em style="color:#6ee7b7">build</em> a system — and agents that <em style="color:#6ee7b7">run</em> it.</p>
-      <p style="color:#fff; font-size:24px; font-weight:700;">Denys Kubrakov</p>
+      <div class="kick" style="color:#6ee7b7">Homework 6 · Team Extension</div>
+      <h1 style="color:#fff; font-size:54px; font-weight:800; margin:.25em 0 .12em; letter-spacing:-1px;">Extending the<br>Banking Pipeline</h1>
+      <p style="color:#c9d6e5; font-size:25px; margin:.2em 0 1em;">A new agent + <em style="color:#6ee7b7">configurable rule engine</em>, a <em style="color:#6ee7b7">REST API</em>, and a <em style="color:#6ee7b7">one-command demo</em>.</p>
+      <p style="color:#fff; font-size:23px; font-weight:700;">Pipeline Quartet</p>
+      <p style="color:#9fb3c8; font-size:16px; margin-top:2px;">presented by Denys Kubrakov</p>
       <p style="margin-top:14px;">
-        <span class="tag">Python 3.12</span>
-        <span class="tag">decimal.Decimal</span>
-        <span class="tag">file-based JSON agents</span>
-        <span class="tag">configurable rule engine</span>
-        <span class="tag">REST API</span>
-        <span class="tag">2 × MCP</span>
-        <span class="tag">93% coverage</span>
+        <span class="tag">config/rules.json</span>
+        <span class="tag">policy_agent</span>
+        <span class="tag">FastAPI</span>
+        <span class="tag">demo.sh</span>
+        <span class="tag">84 tests · 93%</span>
       </p>
     </div>
-    <aside class="notes">Four meta-agents build a banking pipeline of four cooperating runtime agents, now driven by a configurable rule engine and reachable over a REST API. Everything verified end-to-end.</aside>
+    <aside class="notes">This deck covers only the extension work — the three capabilities added on top of the existing homework-6 pipeline.</aside>
   </section>
 
-  <!-- 02 · PROBLEM -->
+  <!-- 02 · STARTING POINT -->
   <section>
-    <div class="kick">The problem</div>
-    <h2 class="ttl">Payments must be right — every time</h2>
-    <div class="ttl-underline"></div>
-    <div class="body split">
-      <div class="c">
-        <p>For every raw transaction a bank must decide, <em>auditably</em> and in order:</p>
-        <ul>
-          <li>Is it <strong>well-formed</strong>? — fields, amount, currency</li>
-          <li>Is it <strong>risky</strong>? — high-value, off-hours, cross-border</li>
-          <li>Is it <strong>compliant</strong>? — reporting, sanctions</li>
-        </ul>
-        <p class="lead" style="font-size:20px;">…without losing money to rounding, leaking account numbers, or dropping a record.</p>
-      </div>
-      <div class="c">
-        <div class="card"><pre><code data-trim class="language-json">{
-  "transaction_id": "TXN005",
-  "amount": "75000.00",
-  "currency": "USD",
-  "source_account": "ACC-1005",
-  "timestamp": "2026-03-16T10:00:00Z",
-  "metadata": { "country": "US" }
-}</code></pre></div>
-        <p class="cap">approve? · reject? · <b>why?</b></p>
-      </div>
-    </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">A decision chain that must be correct, safe, and fully auditable.</aside>
-  </section>
-
-  <!-- 03 · TWO LAYERS (diagram) -->
-  <section>
-    <div class="kick">The idea</div>
-    <h2 class="ttl">Two layers of agents</h2>
+    <div class="kick">Starting point</div>
+    <h2 class="ttl">What homework-6 already had</h2>
     <div class="ttl-underline"></div>
     <div class="body">
-      <div class="stagelabel center">① Meta-agents — build the system</div>
-      <div class="row">
-        <div class="node amber"><div class="t">Spec</div><div class="s">/write-spec</div></div>
+      <div class="row" style="margin-bottom:18px;">
+        <div class="node navy"><div class="t">integrator</div><div class="s">run_pipeline()</div></div>
         <span class="arrow">→</span>
-        <div class="node amber"><div class="t">Code</div><div class="s">+ context7</div></div>
-        <span class="arrow">→</span>
-        <div class="node amber"><div class="t">Tests</div><div class="s">pytest + gate</div></div>
-        <span class="arrow">→</span>
-        <div class="node amber"><div class="t">Docs</div><div class="s">README</div></div>
-      </div>
-      <div class="arrow down">↓ &nbsp;<span style="font-size:16px;color:var(--muted);font-weight:700;">produce</span></div>
-      <div class="stagelabel center">② Runtime agents — run the bank</div>
-      <div class="row">
-        <div class="node"><div class="t">Validator</div><div class="s">fields · Decimal · ISO-4217</div></div>
-        <span class="arrow">→</span>
-        <div class="node"><div class="t">Fraud detector</div><div class="s">risk score</div></div>
-        <span class="arrow">→</span>
-        <div class="node"><div class="t">Policy</div><div class="s">sanctions screen</div></div>
-        <span class="arrow">→</span>
-        <div class="node"><div class="t">Compliance</div><div class="s">approve / reject</div></div>
-        <span class="arrow">→</span>
-        <div class="node navy"><div class="t">Outcome</div><div class="s">audited result</div></div>
-      </div>
-    </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">The deliverable is BOTH the four builders and the running system. The runtime pipeline now has four agents — the policy/sanctions screen was added in the extension.</aside>
-  </section>
-
-  <!-- 04 · ARCHITECTURE (diagram) -->
-  <section>
-    <div class="kick">Architecture</div>
-    <h2 class="ttl">One integrator, four agents, two front doors</h2>
-    <div class="ttl-underline"></div>
-    <div class="body">
-      <div class="row" style="margin-bottom:6px;gap:10px;">
-        <div class="node navy"><div class="t">sample-transactions.json</div><div class="s">batch</div></div>
-        <div class="node amber"><div class="t">REST API</div><div class="s">POST /transactions</div></div>
-        <span class="arrow">→</span>
-        <div class="node"><div class="t">integrator.process_record()</div><div class="s">shared single-record entrypoint</div></div>
-      </div>
-      <div class="center" style="margin:12px 0;">
-        <span class="chip">shared/input</span><span class="arrow" style="font-size:20px;">→</span>
-        <span class="chip">processing</span><span class="arrow" style="font-size:20px;">→</span>
-        <span class="chip">output</span><span class="arrow" style="font-size:20px;">→</span>
-        <span class="chip">results</span>
-        <div style="font-size:15px;color:var(--muted);margin-top:6px;">a file's folder = its state · atomic moves</div>
-      </div>
-      <div class="row" style="gap:10px;">
         <div class="node"><div class="t">Validator</div></div>
         <span class="arrow">→</span>
-        <div class="node"><div class="t">Fraud</div></div>
-        <span class="arrow">→</span>
-        <div class="node amber"><div class="t">Policy</div><div class="s">sanctions</div></div>
+        <div class="node"><div class="t">Fraud detector</div></div>
         <span class="arrow">→</span>
         <div class="node"><div class="t">Compliance</div></div>
         <span class="arrow">→</span>
-        <div class="node navy"><div class="t">results/</div><div class="s">+ summary · audit.log</div></div>
+        <div class="node navy"><div class="t">results/</div></div>
       </div>
-      <p class="cap" style="margin-top:16px;">Rules come from <code>config/rules.json</code> (engine). A rejection short-circuits the rest — yet the txn still lands in <b>results/</b>. Queryable over MCP <b>and</b> HTTP.</p>
+      <ul>
+        <li><strong>3 file-based agents</strong> passing JSON envelopes through <code>shared/</code></li>
+        <li>Money as <code>decimal.Decimal</code>, ISO-4217, PII masking, audit log</li>
+        <li>A custom <strong>MCP server</strong> + a <strong>coverage gate</strong> (blocks push &lt; 80%)</li>
+      </ul>
+      <p class="lead" style="font-size:20px;">…but thresholds were hard-coded, and the only way in was a batch file run.</p>
     </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">Directory = state. Batch (file) and API (HTTP) share process_record(). Everything ends in results/, even rejects.</aside>
+    <div class="foot"><span>Extending the Banking Pipeline</span><span>Pipeline Quartet</span></div>
+    <aside class="notes">Set the baseline so the "before → after" of the extension is clear.</aside>
   </section>
 
-  <!-- 05 · MESSAGE PROTOCOL -->
+  <!-- 03 · THE BRIEF -->
   <section>
-    <div class="kick">How agents cooperate</div>
-    <h2 class="ttl">They pass JSON files — nothing shared in memory</h2>
-    <div class="ttl-underline"></div>
-    <div class="body split">
-      <div class="c">
-        <ul>
-          <li>A standard <strong>envelope</strong> per message — id, timestamp, source, target, payload</li>
-          <li><strong>Atomic writes</strong> — temp file + <code>os.replace</code>; no half-written reads</li>
-          <li>The <code>data</code> block <strong>accumulates</strong> as it flows downstream</li>
-        </ul>
-      </div>
-      <div class="c wide">
-        <div class="card"><pre><code data-trim class="language-json">{
-  "message_id": "uuid4…",
-  "timestamp": "2026-03-16T10:00:00Z",
-  "source_agent": "transaction_validator",
-  "target_agent": "fraud_detector",
-  "data": {
-    "transaction_id": "TXN001",
-    "amount": "1500.00", "currency": "USD",
-    "status": "validated",
-    "cross_border": false, "risk_score": 0
-  }
-}</code></pre></div>
-      </div>
-    </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">File-based passing makes the whole run inspectable and testable.</aside>
-  </section>
-
-  <!-- 06 · THREE AGENTS (table) -->
-  <section>
-    <div class="kick">The runtime pipeline</div>
-    <h2 class="ttl">Four agents, four decisions</h2>
+    <div class="kick">The brief</div>
+    <h2 class="ttl">Take homework-6 and add three things</h2>
     <div class="ttl-underline"></div>
     <div class="body">
-      <table class="clean" style="font-size:18px;">
-        <tr><th style="width:16%">Agent</th><th style="width:24%">Decision</th><th>Rules it enforces (all from <code>config/rules.json</code>)</th></tr>
-        <tr><td><strong style="color:var(--navy)">Validator</strong></td>
-            <td><span class="ok">valid → fraud</span> · else <span class="no">reject</span></td>
-            <td>required fields · positive <code>Decimal</code> · ISO-4217 whitelist · sets <code>cross_border</code></td></tr>
-        <tr><td><strong style="color:var(--navy)">Fraud detector</strong></td>
-            <td>risk score + review flags</td>
-            <td>+50 if &gt; $10k · +20 off-hours (0–6h) · +20 cross-border · review at ≥ 50</td></tr>
-        <tr><td><strong style="color:var(--accent2)">Policy</strong> <span style="font-size:12px;color:var(--accent)">NEW</span></td>
-            <td><span class="ok">clear → compliance</span> · else <span class="no">reject</span></td>
-            <td>configurable sanctions screen — restricted country / account (never logged)</td></tr>
-        <tr><td><strong style="color:var(--navy)">Compliance</strong></td>
-            <td><span class="ok">approve</span> / <span class="no">reject</span> + reason</td>
-            <td>CTR flag ≥ $10k · cross-border EDD · reject if risk ≥ 70</td></tr>
-      </table>
-      <p class="cap" style="margin-top:14px;">Cross-border risk lives in fields <b>separate</b> from domestic risk — a reviewer sees <b>why</b> a txn was flagged.</p>
+      <div class="row" style="align-items:stretch;gap:22px;">
+        <div class="node amber" style="flex:1;padding:22px;"><div class="t" style="font-size:22px;">① New agent +<br>rule engine</div><div class="s" style="font-size:15px;">rules live in a config file, not in code</div></div>
+        <div class="node amber" style="flex:1;padding:22px;"><div class="t" style="font-size:22px;">② REST API<br>gateway</div><div class="s" style="font-size:15px;">submit &amp; retrieve transactions over HTTP</div></div>
+        <div class="node amber" style="flex:1;padding:22px;"><div class="t" style="font-size:22px;">③ One-command<br>demo</div><div class="s" style="font-size:15px;">start, submit, show results — zero manual steps</div></div>
+      </div>
+      <p class="cap" style="margin-top:22px;">Submission: complete project as a <code>.zip</code> <b>or</b> a GitHub repository link.</p>
     </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">Each agent's core is a pure function — trivially unit-testable. The policy/sanctions stage was added in the extension.</aside>
+    <div class="foot"><span>Extending the Banking Pipeline</span><span>Pipeline Quartet</span></div>
+    <aside class="notes">These three come straight from the assignment brief. The rest of the deck takes each in turn.</aside>
   </section>
 
-  <!-- 07 · BANKING-SAFE -->
+  <!-- 04 · CAPABILITY 1a — RULE ENGINE -->
   <section>
-    <div class="kick">Correctness by construction</div>
-    <h2 class="ttl">Banking-safe guarantees</h2>
-    <div class="ttl-underline"></div>
-    <div class="body split">
-      <div class="c">
-        <ul>
-          <li>💰 Money is <strong>decimal.Decimal</strong> from string — <span class="no">never float</span></li>
-          <li>💱 Currency is an <strong>ISO-4217</strong> whitelist — <code>XYZ</code> rejected</li>
-          <li>🔒 <strong>PII masked</strong>: <code>ACC-1005</code> → <code>ACC-****</code> before any log</li>
-          <li>📝 Append-only <strong>audit log</strong> — every step, ISO-8601 UTC</li>
-        </ul>
-      </div>
-      <div class="c">
-        <div class="audit">
-          <span class="k">…</span> | validator&nbsp; | TXN001 | validated<br>
-          <span class="k">…</span> | fraud&nbsp;&nbsp;&nbsp;&nbsp; | TXN002 | scored:50:high_value<br>
-          <span class="k">…</span> | compliance | TXN006 | rejected:bad_currency<br>
-          <span class="k">…</span> | integrator | TXN007 | finalized:rejected
-        </div>
-        <p class="cap">28 lines · <b>0 PII leaks</b> · country = jurisdiction, safe to log</p>
-      </div>
-    </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">The four non-negotiables from the spec.</aside>
-  </section>
-
-  <!-- 08 · DEMO (big screenshot) -->
-  <section>
-    <div class="kick">Live run · python integrator.py</div>
-    <h2 class="ttl">8 in → every one accounted for</h2>
-    <div class="ttl-underline"></div>
-    <div class="body">
-      <div class="stats" style="margin-bottom:18px;">
-        <div class="box"><div class="n">8</div><div class="l">processed</div></div>
-        <div class="box"><div class="n g">6</div><div class="l">approved</div></div>
-        <div class="box"><div class="n r">2</div><div class="l">rejected</div></div>
-        <div class="box"><div class="n">3</div><div class="l">flagged</div></div>
-        <div class="box"><div class="n">2</div><div class="l">cross-border</div></div>
-      </div>
-      <a class="shotlink" href="screenshots/pipeline-run.png" target="_blank" rel="noopener">
-        <img class="shot" src="screenshots/pipeline-run.png" alt="pipeline run terminal output" style="max-height:330px;"></a>
-      <p class="cap"><b>pipeline-run.png</b> — TXN006 rejected (currency XYZ) · TXN007 rejected (amount ≤ 0, still logged) · click to enlarge</p>
-    </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">TXN007 is the tricky case: cross-border AND invalid — validation wins, cross_border still recorded.</aside>
-  </section>
-
-  <!-- 09 · BUILT BY META-AGENTS (screenshot) -->
-  <section>
-    <div class="kick">How it was built</div>
-    <h2 class="ttl">Four meta-agents, one job each</h2>
-    <div class="ttl-underline"></div>
-    <div class="body split">
-      <div class="c">
-        <ul>
-          <li><strong>① Spec</strong> — writes <code>specification.md</code> via <code>/write-spec</code></li>
-          <li><strong>② Code</strong> — generates the pipeline; docs via <em>context7</em></li>
-          <li><strong>③ Tests</strong> — pytest suite + the coverage-gate hook</li>
-          <li><strong>④ Docs</strong> — README + HOWTORUN</li>
-        </ul>
-        <p class="lead" style="font-size:19px;">Spec is authoritative — the code never invents rules.</p>
-      </div>
-      <div class="c wide center">
-        <a class="shotlink" href="screenshots/write-spec-1.png" target="_blank" rel="noopener">
-          <img class="shot" src="screenshots/write-spec-1.png" alt="/write-spec generating the spec" style="max-height:440px;"></a>
-        <p class="cap"><b>/write-spec</b> generating the specification</p>
-      </div>
-    </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">The four meta-agents map 1:1 to the graded roles.</aside>
-  </section>
-
-  <!-- 10 · SKILLS & GATE (concept) -->
-  <section>
-    <div class="kick">Automation</div>
-    <h2 class="ttl">Skills &amp; a coverage gate that bites</h2>
-    <div class="ttl-underline"></div>
-    <div class="body split">
-      <div class="c">
-        <p style="font-weight:700;color:var(--navy);">Three slash commands</p>
-        <div style="margin:6px 0 20px;">
-          <span class="chip">/write-spec</span><span class="chip">/run-pipeline</span><span class="chip">/validate-transactions</span>
-        </div>
-        <p style="font-weight:700;color:var(--navy);">Coverage gate — two layers, fail-closed</p>
-        <ul>
-          <li>git <strong>pre-push</strong> hook</li>
-          <li>Claude Code <strong>PreToolUse</strong> hook — <em>denies</em> <code>git push</code> below 80%</li>
-        </ul>
-      </div>
-      <div class="c">
-        <div class="row"><div class="node navy"><div class="t">git push</div></div><span class="arrow">→</span>
-          <div class="node amber"><div class="t">coverage_gate.sh</div><div class="s">cov ≥ 80% ?</div></div></div>
-        <div class="row" style="margin-top:16px;gap:30px;">
-          <div class="node"><div class="t ok" style="color:var(--ok)">≥ 80% → allow</div></div>
-          <div class="node"><div class="t no" style="color:var(--no)">&lt; 80% → block</div></div>
-        </div>
-        <p class="cap">Verified: 99% threshold → blocked · normal command → allowed</p>
-      </div>
-    </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">A real quality wall, not advisory. Two independent layers over one script.</aside>
-  </section>
-
-  <!-- 11 · GATE IN ACTION (screenshot) -->
-  <section>
-    <div class="kick">Evidence</div>
-    <h2 class="ttl">The gate blocking a push</h2>
-    <div class="ttl-underline"></div>
-    <div class="body center">
-      <a class="shotlink" href="screenshots/hook-trigger.png" target="_blank" rel="noopener">
-        <img class="shot shotbig" src="screenshots/hook-trigger.png" alt="coverage-gate hook blocking a push"></a>
-      <p class="cap"><b>hook-trigger.png</b> — <code>git push</code> denied because coverage is below the threshold</p>
-    </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">Exit code 2 = deny at the Claude Code layer; pre-push aborts at the git layer.</aside>
-  </section>
-
-  <!-- 12 · MCP (concept) -->
-  <section>
-    <div class="kick">MCP integration</div>
-    <h2 class="ttl">Two servers: docs in, status out</h2>
-    <div class="ttl-underline"></div>
-    <div class="body split">
-      <div class="c">
-        <p style="font-weight:700;color:var(--navy);">context7 <span class="lead" style="font-weight:400;">— docs used while coding</span></p>
-        <ul style="font-size:20px;">
-          <li><code>/python/cpython</code> → Decimal quantize · ROUND_HALF_UP</li>
-          <li><code>/prefecthq/fastmcp</code> → v3 <code>@mcp.tool</code> style</li>
-        </ul>
-      </div>
-      <div class="c">
-        <p style="font-weight:700;color:var(--navy);">pipeline-status <span class="lead" style="font-weight:400;">— custom FastMCP</span></p>
-        <ul style="font-size:20px;">
-          <li><code>get_transaction_status(id)</code></li>
-          <li><code>list_pipeline_results()</code></li>
-          <li>resource <code>pipeline://summary</code></li>
-        </ul>
-        <p class="lead" style="font-size:17px;">PII-safe: whitelist projection — txn id + outcome only.</p>
-      </div>
-    </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">context7 fed real library IDs; the custom server makes the pipeline queryable.</aside>
-  </section>
-
-  <!-- 13 · MCP IN ACTION (screenshot) -->
-  <section>
-    <div class="kick">Evidence</div>
-    <h2 class="ttl">Querying the pipeline over MCP</h2>
-    <div class="ttl-underline"></div>
-    <div class="body center">
-      <a class="shotlink" href="screenshots/mcp-interaction.png" target="_blank" rel="noopener">
-        <img class="shot shotbig" src="screenshots/mcp-interaction.png" alt="MCP interaction"></a>
-      <p class="cap"><b>mcp-interaction.png</b> — context7 lookup + a custom <code>pipeline-status</code> tool call · more in appendix</p>
-    </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">Second capture (mcp-interaction-2) is in the appendix.</aside>
-  </section>
-
-  <!-- 13b · EXTENSION: RULE ENGINE -->
-  <section>
-    <div class="kick">Extension · configurable rule engine</div>
+    <div class="kick">① Configurable rule engine</div>
     <h2 class="ttl">Policy is data, not code</h2>
     <div class="ttl-underline"></div>
     <div class="body split">
       <div class="c">
         <ul>
-          <li>Every threshold &amp; list lives in <strong>config/rules.json</strong></li>
-          <li>Agents read a validated <code>RuleEngine</code> — <span class="no">no hard-coded constants</span></li>
-          <li>Change policy without touching Python, then re-run</li>
-          <li>New <strong style="color:var(--accent2)">policy agent</strong> screens sanctions from the same config</li>
+          <li>Every threshold &amp; list moved into <strong>config/rules.json</strong></li>
+          <li><code>rules/engine.py</code> loads &amp; <strong>validates</strong> it on startup</li>
+          <li>Agents read a <code>RuleEngine</code> — <span class="no">no hard-coded constants</span></li>
+          <li>Money stays <code>Decimal</code> (values are strings)</li>
         </ul>
-        <p class="cap" style="text-align:left;">Proof: add <code>"DE"</code> to <code>sanctioned_countries</code> →
-          <b>TXN004 rejected</b> — "sanctions screening hit". Revert → approved.</p>
+        <p class="lead" style="font-size:19px;">Change a threshold or a sanctions list without touching Python, then re-run.</p>
       </div>
       <div class="c">
         <div class="card"><pre><code data-trim class="language-json">{
@@ -475,143 +172,223 @@
   "off_hours_start": 0, "off_hours_end": 6,
   "ctr_threshold": "10000",
   "critical_risk_threshold": 70,
-  "iso_4217_whitelist": ["USD","EUR","GBP", "…"],
+  "iso_4217_whitelist": ["USD","EUR","GBP","…"],
   "sanctioned_countries": [],
   "sanctioned_accounts": []
 }</code></pre></div>
         <p class="cap">config/rules.json — one edit changes the whole pipeline</p>
       </div>
     </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">Refactored the 3 original agents to read the engine — identical default outcomes — then added the policy agent as a 4th stage.</aside>
+    <div class="foot"><span>Extending the Banking Pipeline</span><span>Pipeline Quartet</span></div>
+    <aside class="notes">The engine validates types, positive thresholds, and ISO codes on load and raises a clear error otherwise.</aside>
   </section>
 
-  <!-- 13c · EXTENSION: REST API + DEMO -->
+  <!-- 05 · CAPABILITY 1b — NEW POLICY AGENT (before/after) -->
   <section>
-    <div class="kick">Extension · REST API + one command</div>
-    <h2 class="ttl">Same pipeline, now over HTTP</h2>
+    <div class="kick">① New agent</div>
+    <h2 class="ttl">A policy / sanctions stage — the 4th agent</h2>
+    <div class="ttl-underline"></div>
+    <div class="body">
+      <div class="stagelabel center">Before — 3 agents</div>
+      <div class="row" style="margin-bottom:16px;">
+        <div class="node ghost"><div class="t">Validator</div></div><span class="arrow">→</span>
+        <div class="node ghost"><div class="t">Fraud</div></div><span class="arrow">→</span>
+        <div class="node ghost"><div class="t">Compliance</div></div>
+      </div>
+      <div class="stagelabel center">After — 4 agents</div>
+      <div class="row">
+        <div class="node"><div class="t">Validator</div></div><span class="arrow">→</span>
+        <div class="node"><div class="t">Fraud</div></div><span class="arrow">→</span>
+        <div class="node amber"><div class="t">Policy<span class="pill-new">NEW</span></div><div class="s">sanctions screen</div></div><span class="arrow">→</span>
+        <div class="node"><div class="t">Compliance</div></div>
+      </div>
+      <p class="cap" style="margin-top:20px;">Rejects on a restricted <b>country</b> or <b>account</b> (matched in memory, <b>never logged</b>) — otherwise annotates <code>policy_flags</code> and hands off. Its own auditable stage.</p>
+    </div>
+    <div class="foot"><span>Extending the Banking Pipeline</span><span>Pipeline Quartet</span></div>
+    <aside class="notes">Screening is now an independent, auditable stage between fraud and compliance, driven by the same config.</aside>
+  </section>
+
+  <!-- 06 · NO REGRESSION + PROOF -->
+  <section>
+    <div class="kick">① Safe refactor</div>
+    <h2 class="ttl">New engine, identical behavior</h2>
     <div class="ttl-underline"></div>
     <div class="body split">
       <div class="c">
-        <p style="font-weight:700;color:var(--navy);">FastAPI gateway (<code>api/app.py</code>)</p>
-        <ul style="font-size:20px;">
-          <li><code>GET /health</code></li>
-          <li><code>POST /transactions</code> → 201, result (accounts masked)</li>
-          <li><code>GET /transactions/{id}</code> · <code>GET /results</code></li>
-          <li>auto OpenAPI docs at <code>/docs</code></li>
+        <ul>
+          <li>The 3 original agents now read the engine instead of constants</li>
+          <li>Default <code>config/rules.json</code> ⇒ <strong>same 8 outcomes</strong> as before (6 approved / 2 rejected)</li>
+          <li>Pure helpers take an optional <code>engine=</code> so tests inject custom policy</li>
         </ul>
-        <p class="lead" style="font-size:18px;">Batch <b>and</b> API share one entrypoint — <code>integrator.process_record()</code>. No logic duplicated.</p>
       </div>
       <div class="c">
-        <div class="card"><pre><code data-trim class="language-bash">$ ./demo.sh          # zero manual steps
-▶ starting API on :8100 … ✓ up
-── POST /transactions — high-value wire
-  { "status": "approved",
-    "source_account": "ACC-****",
-    "compliance_flags": ["CTR"] }
-✅ 4 submitted → 3 approved, 1 rejected</code></pre></div>
-        <p class="cap"><code>demo.sh</code> — starts API, submits txns, prints results, cleans up</p>
+        <div class="card"><pre><code data-trim class="language-bash"># sanction a country in config/rules.json:
+"sanctioned_countries": ["DE"]
+
+$ python integrator.py
+TXN004 (country DE) → REJECTED
+   reason: "sanctions screening hit"
+
+# revert → TXN004 approved again</code></pre></div>
+        <p class="cap">Policy is genuinely data-driven — proven by flipping one list</p>
       </div>
     </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">Two context7 lookups (FastAPI, Uvicorn) recorded as Query 3 &amp; 4 in research-notes.md.</aside>
+    <div class="foot"><span>Extending the Banking Pipeline</span><span>Pipeline Quartet</span></div>
+    <aside class="notes">This is the key correctness argument: the refactor changed structure, not behavior — and the new stage is configurable.</aside>
   </section>
 
-  <!-- 14 · TESTS (screenshot + stats) -->
+  <!-- 07 · CAPABILITY 2 — REST API -->
   <section>
-    <div class="kick">Evidence</div>
-    <h2 class="ttl">Tested, not asserted</h2>
+    <div class="kick">② REST API gateway</div>
+    <h2 class="ttl">The same pipeline, now over HTTP</h2>
     <div class="ttl-underline"></div>
     <div class="body split">
       <div class="c">
-        <div class="stats" style="flex-direction:column;gap:16px;">
+        <p style="font-weight:700;color:var(--navy);margin-bottom:6px;">FastAPI · <code>api/app.py</code></p>
+        <table class="clean">
+          <tr><th>Endpoint</th><th>Does</th></tr>
+          <tr><td><code>GET /health</code></td><td>liveness</td></tr>
+          <tr><td><code>POST /transactions</code></td><td>run one txn → 201 + result</td></tr>
+          <tr><td><code>GET /transactions/{id}</code></td><td>stored result · 404 if none</td></tr>
+          <tr><td><code>GET /results</code></td><td>summary of all</td></tr>
+        </table>
+        <p class="lead" style="font-size:17px;margin-top:10px;">Auto OpenAPI docs at <code>/docs</code>.</p>
+      </div>
+      <div class="c">
+        <div class="row"><div class="node navy"><div class="t">file (batch)</div></div>
+          <div class="node amber"><div class="t">HTTP (API)</div></div></div>
+        <div class="arrow" style="text-align:center;margin:8px 0;">↓</div>
+        <div class="row"><div class="node"><div class="t">integrator.process_record()</div><div class="s">one shared entrypoint · no logic duplicated</div></div></div>
+        <p class="cap">A thin adapter — same agents, same result JSON, accounts masked</p>
+      </div>
+    </div>
+    <div class="foot"><span>Extending the Banking Pipeline</span><span>Pipeline Quartet</span></div>
+    <aside class="notes">context7 lookups for FastAPI (Pydantic v2 body, 201, HTTPException) and Uvicorn are recorded as Query 3 &amp; 4 in research-notes.md.</aside>
+  </section>
+
+  <!-- 08 · API IN ACTION (code, not screenshot) -->
+  <section>
+    <div class="kick">② REST API gateway</div>
+    <h2 class="ttl">Submit &amp; retrieve over HTTP</h2>
+    <div class="ttl-underline"></div>
+    <div class="body">
+      <div class="card"><pre><code data-trim class="language-bash">$ curl -X POST localhost:8100/transactions -d '{
+    "transaction_id":"T100", "amount":"25000.00", "currency":"USD",
+    "source_account":"ACC-1001", "transaction_type":"wire_transfer",
+    "timestamp":"2026-03-16T09:00:00Z", "metadata":{"country":"US"} }'
+
+→ 201 Created
+  { "transaction_id": "T100",
+    "status": "approved",
+    "result": { "source_account": "ACC-****",     # PII masked
+                "risk_score": 50,
+                "compliance_flags": ["CTR"] } }</code></pre></div>
+      <p class="cap">A transaction submitted over HTTP is scored, screened, decided, and stored — no transaction file involved.</p>
+    </div>
+    <div class="foot"><span>Extending the Banking Pipeline</span><span>Pipeline Quartet</span></div>
+    <aside class="notes">Point out the masked account and the CTR flag — proof the real agents ran on the posted body.</aside>
+  </section>
+
+  <!-- 09 · CAPABILITY 3 — DEMO -->
+  <section>
+    <div class="kick">③ One-command demo</div>
+    <h2 class="ttl"><code>./demo.sh</code> — zero manual steps</h2>
+    <div class="ttl-underline"></div>
+    <div class="body split">
+      <div class="c">
+        <ul>
+          <li>Ensures the venv + installs deps</li>
+          <li>Starts the API, <strong>waits for <code>/health</code></strong></li>
+          <li>Submits a spread of sample transactions</li>
+          <li>Prints each result + the summary</li>
+          <li><strong>trap</strong> shuts the server down on exit — nothing left running</li>
+        </ul>
+      </div>
+      <div class="c">
+        <div class="card"><pre><code data-trim class="language-bash">$ ./demo.sh
+▶ starting API on :8100 … ✓ up
+── POST high-value wire   → approved (CTR)
+── POST cross-border      → approved (EDD, flagged)
+── POST bad currency XYZ  → rejected
+✅ 4 submitted → 3 approved, 1 rejected
+▶ stopping API …</code></pre></div>
+        <p class="cap">One script demonstrates the whole HTTP path end-to-end</p>
+      </div>
+    </div>
+    <div class="foot"><span>Extending the Banking Pipeline</span><span>Pipeline Quartet</span></div>
+    <aside class="notes">demo.sh is the fastest way for a reviewer to see everything work.</aside>
+  </section>
+
+  <!-- 10 · QUALITY -->
+  <section>
+    <div class="kick">Quality</div>
+    <h2 class="ttl">Gated, and green</h2>
+    <div class="ttl-underline"></div>
+    <div class="body split">
+      <div class="c">
+        <div class="stats" style="margin-bottom:18px;">
           <div class="box"><div class="n">84</div><div class="l">tests pass</div></div>
           <div class="box"><div class="n g">93%</div><div class="l">coverage</div></div>
+          <div class="box"><div class="n">+32</div><div class="l">new tests</div></div>
         </div>
-        <ul style="font-size:19px;margin-top:16px;">
-          <li>Unit tests per agent + MCP + rule engine</li>
-          <li>Integration + REST API (TestClient)</li>
-          <li>Isolated via <code>tmp_path</code></li>
+        <ul style="font-size:20px;">
+          <li>New suites: <code>test_rule_engine</code>, <code>test_policy_agent</code>, <code>test_api</code></li>
+          <li>API tested via FastAPI <code>TestClient</code> (no live server)</li>
         </ul>
       </div>
-      <div class="c wide center">
-        <a class="shotlink" href="screenshots/test-coverage.png" target="_blank" rel="noopener">
-          <img class="shot" src="screenshots/test-coverage.png" alt="coverage report 94%" style="max-height:470px;"></a>
-        <p class="cap"><b>test-coverage.png</b> — gate needs 80%, aim 90% — both cleared</p>
+      <div class="c">
+        <div class="card"><pre><code data-trim class="language-bash"># coverage gate extended to the new packages
+pytest --cov=agents --cov=mcp --cov=integrator \
+       --cov=api --cov=rules --cov-fail-under=80
+
+TOTAL                612   41   93%
+Required coverage of 80% reached.
+84 passed  ✓  push allowed</code></pre></div>
+        <p class="cap">The push gate now covers <code>api/</code> and <code>rules/</code> too</p>
       </div>
     </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">93.30% total across all packages incl. api + rules; 84 tests. (Screenshot shows the earlier core-only 94% run.)</aside>
+    <div class="foot"><span>Extending the Banking Pipeline</span><span>Pipeline Quartet</span></div>
+    <aside class="notes">Coverage dipped from 94% (core-only) to 93% because the gate now spans more packages — still well above the 80% wall.</aside>
   </section>
 
-  <!-- 15 · SUCCESS CRITERIA -->
+  <!-- 11 · DELIVERABLES -->
   <section>
-    <div class="kick">Self-check</div>
-    <h2 class="ttl">All 11 criteria — verified live</h2>
+    <div class="kick">Deliverables</div>
+    <h2 class="ttl">Everything the brief asked for</h2>
     <div class="ttl-underline"></div>
     <div class="body split">
       <ul class="checks c">
-        <li>Spec: 5 sections + task per agent</li>
-        <li>Spec-generating skill present</li>
-        <li>Pipeline runs, no errors</li>
-        <li>Valid JSON to <code>shared/</code></li>
-        <li><code>/run-pipeline</code> executes</li>
-        <li>Coverage gate blocks &lt; 80%</li>
+        <li><code>config/rules.json</code> — tunable policy</li>
+        <li><code>rules/engine.py</code> — validated engine</li>
+        <li>3 agents refactored — same outcomes</li>
+        <li><code>agents/policy_agent.py</code> — new stage</li>
       </ul>
       <ul class="checks c">
-        <li>Both MCP servers respond</li>
-        <li>Coverage ≥ 80% (<strong style="color:var(--ok)">93%</strong>, 84 tests)</li>
-        <li>README: name + ASCII diagram</li>
-        <li>HOWTORUN numbered steps</li>
-        <li>Screenshots in repo + PR</li>
-        <li><strong>Nothing left outstanding</strong></li>
+        <li><code>api/app.py</code> — 4 endpoints</li>
+        <li><code>integrator.process_record()</code> shared</li>
+        <li><code>demo.sh</code> — one command</li>
+        <li>tests + gate ≥ 80% · README / HOWTORUN</li>
       </ul>
     </div>
-    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">Every row re-run this session.</aside>
+    <div class="foot"><span>Extending the Banking Pipeline</span><span>Pipeline Quartet</span></div>
+    <aside class="notes">Maps 1:1 to the EXTENSION-PROMPTS.md checklist — all done and verified.</aside>
   </section>
 
-  <!-- 16 · CLOSE -->
+  <!-- 12 · CLOSE -->
   <section class="title-slide">
     <div class="center">
       <div class="kick" style="color:#6ee7b7">Takeaways</div>
-      <h2 style="color:#fff;font-size:44px;font-weight:800;margin:.2em 0 .5em;">What made it work</h2>
-      <ul style="display:inline-block;text-align:left;color:#e7eef7;font-size:24px;line-height:1.8;">
-        <li><em style="color:#6ee7b7">Spec-first</em> — one authoritative contract</li>
-        <li><em style="color:#6ee7b7">Agents as files</em> — directory = state, fully auditable</li>
-        <li><em style="color:#6ee7b7">Correctness enforced</em> — Decimal, ISO-4217, PII masking</li>
-        <li><em style="color:#6ee7b7">Quality gated</em> — push blocked below 80% (93% actual)</li>
-        <li><em style="color:#6ee7b7">Queryable</em> — custom FastMCP + context7</li>
-        <li><em style="color:#6ee7b7">Extensible</em> — configurable rule engine + REST API added cleanly</li>
+      <h2 style="color:#fff;font-size:42px;font-weight:800;margin:.2em 0 .5em;">A clean extension</h2>
+      <ul style="display:inline-block;text-align:left;color:#e7eef7;font-size:23px;line-height:1.8;">
+        <li><em style="color:#6ee7b7">Data-driven policy</em> — thresholds &amp; sanctions in one config</li>
+        <li><em style="color:#6ee7b7">A new agent</em> — sanctions screen, its own auditable stage</li>
+        <li><em style="color:#6ee7b7">An HTTP surface</em> — same pipeline, one shared entrypoint</li>
+        <li><em style="color:#6ee7b7">One-command demo</em> — <code>./demo.sh</code></li>
+        <li><em style="color:#6ee7b7">No regression</em> — 84 tests, 93%, gate stays green</li>
       </ul>
-      <p style="margin-top:26px;"><span class="tag">github.com/Denys-set/gen-ai-software-engineering · homework-6</span></p>
+      <p style="margin-top:24px;"><span class="tag">github.com/Denys-set/gen-ai-software-engineering · homework-6</span></p>
       <p style="color:#9fb3c8;font-size:20px;margin-top:10px;">Thank you — questions?</p>
     </div>
-  </section>
-
-  <!-- 17 · APPENDIX (vertical stack) -->
-  <section>
-    <section>
-      <div class="kick">Appendix</div>
-      <h2 class="ttl">All screenshots</h2>
-      <div class="ttl-underline"></div>
-      <div class="body">
-        <p>Press <kbd>↓</kbd> to page through the full evidence set. Every image opens full-size on click.</p>
-      </div>
-      <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    </section>
-    <section><div class="kick">Appendix</div><h2 class="ttl">Spec generation — 1 / 4</h2><div class="ttl-underline"></div>
-      <div class="body center"><a class="shotlink" href="screenshots/write-spec-1.png" target="_blank" rel="noopener"><img class="shot shotbig" src="screenshots/write-spec-1.png" alt="write-spec 1"></a></div></section>
-    <section><div class="kick">Appendix</div><h2 class="ttl">Spec generation — 2 / 4</h2><div class="ttl-underline"></div>
-      <div class="body center"><a class="shotlink" href="screenshots/write-spec-2.png" target="_blank" rel="noopener"><img class="shot shotbig" src="screenshots/write-spec-2.png" alt="write-spec 2"></a></div></section>
-    <section><div class="kick">Appendix</div><h2 class="ttl">Spec generation — 3 / 4</h2><div class="ttl-underline"></div>
-      <div class="body center"><a class="shotlink" href="screenshots/write-spec-3.png" target="_blank" rel="noopener"><img class="shot shotbig" src="screenshots/write-spec-3.png" alt="write-spec 3"></a></div></section>
-    <section><div class="kick">Appendix</div><h2 class="ttl">Spec generation — 4 / 4</h2><div class="ttl-underline"></div>
-      <div class="body center"><a class="shotlink" href="screenshots/write-spec-4.png" target="_blank" rel="noopener"><img class="shot shotbig" src="screenshots/write-spec-4.png" alt="write-spec 4"></a></div></section>
-    <section><div class="kick">Appendix</div><h2 class="ttl"><code>/run-pipeline</code> skill executing</h2><div class="ttl-underline"></div>
-      <div class="body center"><a class="shotlink" href="screenshots/skill-run-pipeline.png" target="_blank" rel="noopener"><img class="shot shotbig" src="screenshots/skill-run-pipeline.png" alt="run-pipeline skill"></a></div></section>
-    <section><div class="kick">Appendix</div><h2 class="ttl">MCP interaction — second capture</h2><div class="ttl-underline"></div>
-      <div class="body center"><a class="shotlink" href="screenshots/mcp-interaction-2.png" target="_blank" rel="noopener"><img class="shot shotbig" src="screenshots/mcp-interaction-2.png" alt="mcp interaction 2"></a></div></section>
   </section>
 
 </div></div>
