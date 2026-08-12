@@ -1,18 +1,17 @@
 {
-  "message_id": "f22dfd92-a3f1-4e56-bc8e-273b6ecbcb51",
-  "timestamp": "2026-08-12T16:31:52Z",
+  "message_id": "f87e3fed-f17b-4c79-9438-02b320380674",
+  "timestamp": "2026-08-12T16:36:27Z",
   "source_agent": "compliance_checker",
   "target_agent": "results",
   "message_type": "transaction",
   "data": {
-    "transaction_id": "TXN001",
+    "transaction_id": "DEMO001",
     "timestamp": "2026-03-16T09:00:00Z",
     "source_account": "ACC-****",
     "destination_account": "ACC-****",
     "amount": "1500.00",
     "currency": "USD",
     "transaction_type": "transfer",
-    "description": "Monthly rent payment",
     "metadata": {
       "channel": "online",
       "country": "US"

@@ -53,3 +53,43 @@
   `list_pipeline_results()`, and `@mcp.resource("pipeline://summary")` for the run-summary
   resource, then launch with `mcp.run()` under an `if __name__ == "__main__"` guard so Claude
   Code can start it as a stdio subprocess (matching the `mcp.json` `pipeline-status` block).
+
+## Query 3: FastAPI request body + status codes (REST gateway — extension Task 2)
+- **Search:** "FastAPI Pydantic v2 request body, status_code 201, path parameter, HTTPException 404"
+  (resolve-library-id `libraryName="FastAPI"`)
+- **context7 library ID:** `/fastapi/fastapi` → redirected to `/websites/fastapi_tiangolo`
+  (the official docs site), resolved live from the context7 MCP server.
+- **What came back:** declare the body as a Pydantic `BaseModel` (`item: Item` parameter);
+  set the success code with `status_code=status.HTTP_201_CREATED` on the decorator; take a path
+  param with `{transaction_id}`; and `raise HTTPException(status_code=404, detail=...)` for a
+  missing resource. Snippet:
+  ```python
+  from fastapi import FastAPI, HTTPException, status
+  from pydantic import BaseModel
+  class Item(BaseModel):
+      name: str
+  @app.post("/items/", status_code=status.HTTP_201_CREATED)
+  def create_item(item: Item): ...
+  ```
+- **Applied:** in `api/app.py`, `TransactionIn(BaseModel)` mirrors the sample-transaction fields
+  with `amount: str` (Decimal-safe, never float); `POST /transactions` returns
+  `status.HTTP_201_CREATED`; `GET /transactions/{transaction_id}` raises `HTTPException(404)`
+  when no result exists. Used `txn.model_dump(exclude_none=True)` (Pydantic v2) to hand a plain
+  dict to `integrator.process_record`.
+
+## Query 4: Running Uvicorn (programmatically vs. CLI)
+- **Search:** "uvicorn.run programmatic vs command line module app string"
+  (resolve-library-id `libraryName="Uvicorn"`)
+- **context7 library ID:** `/encode/uvicorn` → redirected to `/kludex/uvicorn`.
+- **What came back:** prefer the **import-string** form `uvicorn.run("module:app", ...)` inside an
+  `if __name__ == "__main__"` guard (needed for reload/workers); the CLI form is `uvicorn main:app`.
+  Snippet:
+  ```python
+  import uvicorn
+  if __name__ == "__main__":
+      uvicorn.run("api.app:app", host="127.0.0.1", port=8100, log_level="info")
+  ```
+- **Applied:** `api/app.py` exposes `app` as `api.app:app` (so `uvicorn api.app:app --port 8100`
+  works and `TestClient(app)` can import it), plus a `python -m api.app` entrypoint that calls
+  `uvicorn.run("api.app:app", ...)` under the `__main__` guard. `demo.sh` launches it with the CLI
+  form.

@@ -41,45 +41,69 @@ masked to `ACC-****` before they ever reach a log, a printed summary, or a persi
 - **`agents/fraud_detector.py`** — additive risk score: high-value `> $10,000` (+50), off-hours UTC
   hour in `[0,6)` (+20), cross-border `country != US` (+20). Tracks cross-border risk in fields
   *separate* from domestic risk (`cross_border_flags`, `cross_border_review`); flags for review.
+- **`agents/policy_agent.py`** — sanctions / restricted-country screen driven by the configurable
+  rule engine (`config/rules.json`). Rejects on a `sanctioned_countries` / `sanctioned_accounts`
+  hit (accounts matched in memory, never logged); otherwise annotates `policy_flags` and hands off
+  to compliance. Its own auditable stage between fraud and compliance.
 - **`agents/compliance_checker.py`** — terminal decision. CTR flag for `amount ≥ $10,000`,
-  a separate cross-border EDD (enhanced due diligence) flag, sanctions screening, and critical-risk
+  a separate cross-border EDD (enhanced due diligence) flag, and critical-risk
   rejection (`risk_score ≥ 70`); otherwise approves. Routes the final message to `results/`.
+
+### Configurable rule engine (`config/rules.json` + `rules/engine.py`)
+
+Every tunable threshold and list — high-value amount, off-hours window, cross-border/CTR/critical
+cut-offs, the ISO-4217 whitelist, home country, and the sanctions lists — lives in
+**`config/rules.json`**. The agents read the `RuleEngine` instead of hard-coded constants, so you
+can change policy without touching Python (e.g. add `"KP"` to `sanctioned_countries`, or lower
+`high_value_amount`, and re-run). Monetary values are strings (parsed to `Decimal`), and the engine
+validates the config on load.
+
+### REST API gateway (`api/app.py`)
+
+A thin **FastAPI** adapter runs a transaction through the *same* agents over HTTP and returns the
+*same* result JSON (accounts masked). Endpoints: `GET /health`, `POST /transactions`,
+`GET /transactions/{id}`, `GET /results` — with auto OpenAPI docs at `/docs`. Both the batch
+integrator and the API share one entrypoint, `integrator.process_record()`. Run it end-to-end with
+**`./demo.sh`** (starts the server, submits sample transactions, prints results, cleans up).
 
 ---
 
 ## Architecture
 
 ```
-                         sample-transactions.json
-                                   │
-                                   ▼
-                            ┌──────────────┐
-                            │  integrator  │  (run_pipeline)
-                            └──────┬───────┘
-                                   │ wrap each record in a message envelope
-                                   ▼
-                            shared/input/
-                                   │
-        ┌──────────────────────────┼───────────────────────── per transaction ─────────┐
-        │                          ▼                                                     │
-        │   shared/processing ─▶ transaction_validator ─▶ shared/output                  │
-        │                          │  valid?                                             │
-        │                 rejected │  yes                                                │
-        │                          ▼                                                     │
-        │   shared/processing ─▶ fraud_detector        ─▶ shared/output                  │
-        │                          │                                                     │
-        │                          ▼                                                     │
-        │   shared/processing ─▶ compliance_checker    ─▶ shared/output                  │
-        │                          │                                                     │
-        └──────────────────────────┼─────────────────────────────────────────────────── ┘
-                                   ▼
-                    shared/results/<TXN>.json  +  summary.json  +  audit.log
-                                   ▲
-                                   │  queryable over MCP
-                     ┌─────────────┴──────────────┐
-                     │  pipeline-status (FastMCP)  │  get_transaction_status,
-                     │                             │  list_pipeline_results,
-                     └─────────────────────────────┘  resource pipeline://summary
+        sample-transactions.json          REST API (api/app.py)
+                  │                        POST /transactions
+                  ▼                                 │
+           ┌──────────────┐                         │  both call
+           │  integrator  │ (run_pipeline) ─────────┴──▶ integrator.process_record()
+           └──────┬───────┘
+                  │ wrap each record in a message envelope
+                  ▼
+           shared/input/
+                  │
+   ┌──────────────┼───────────────────────────── per transaction ────────────────┐
+   │              ▼                                                                │
+   │  processing ─▶ transaction_validator ─▶ output      (rules/engine.py         │
+   │              │  valid?                                 ← config/rules.json)   │
+   │     rejected │  yes                                                           │
+   │              ▼                                                                │
+   │  processing ─▶ fraud_detector        ─▶ output                               │
+   │              │                                                                │
+   │              ▼                                                                │
+   │  processing ─▶ policy_agent (sanctions) ─▶ output                            │
+   │              │  clear?                                                        │
+   │     rejected │  yes                                                           │
+   │              ▼                                                                │
+   │  processing ─▶ compliance_checker    ─▶ output                               │
+   │              │                                                                │
+   └──────────────┼──────────────────────────────────────────────────────────────┘
+                  ▼
+    shared/results/<TXN>.json  +  summary.json  +  audit.log
+                  ▲
+                  │  queryable over MCP           and over HTTP: GET /results, /transactions/{id}
+    ┌─────────────┴──────────────┐
+    │  pipeline-status (FastMCP)  │  get_transaction_status, list_pipeline_results,
+    └─────────────────────────────┘  resource pipeline://summary
 ```
 
 A rejection at any stage short-circuits the remaining stages, but the transaction still lands in
@@ -94,7 +118,9 @@ A rejection at any stage short-circuits the remaining stages, but the transactio
 | Language | Python 3.11+ (developed/tested on 3.12) |
 | Money | `decimal.Decimal` with `ROUND_HALF_UP` — never `float` |
 | Messaging | File-based JSON envelopes through `shared/{input,processing,output,results}` |
-| Tests | `pytest` + `pytest-cov` (94% coverage) |
+| Rule engine | `config/rules.json` (data) + `rules/engine.py` — no hard-coded thresholds |
+| REST API | `FastAPI` + `uvicorn` — `api/app.py`, run `./demo.sh` |
+| Tests | `pytest` + `pytest-cov` (93% coverage, 84 tests) |
 | Custom MCP server | `fastmcp` (≥ 3.0) — `pipeline-status` |
 | Docs MCP server | `context7` (`@upstash/context7-mcp`) — used during code generation |
 | Coverage gate | `scripts/coverage_gate.sh` via a git `pre-push` hook **and** a Claude Code PreToolUse hook |

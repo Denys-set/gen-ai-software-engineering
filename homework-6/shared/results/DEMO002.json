@@ -1,35 +1,38 @@
 {
-  "message_id": "f22dfd92-a3f1-4e56-bc8e-273b6ecbcb51",
-  "timestamp": "2026-08-12T16:31:52Z",
+  "message_id": "accef794-41da-40a6-956d-7b1bbf488069",
+  "timestamp": "2026-08-12T16:36:27Z",
   "source_agent": "compliance_checker",
   "target_agent": "results",
   "message_type": "transaction",
   "data": {
-    "transaction_id": "TXN001",
-    "timestamp": "2026-03-16T09:00:00Z",
+    "transaction_id": "DEMO002",
+    "timestamp": "2026-03-16T09:15:00Z",
     "source_account": "ACC-****",
     "destination_account": "ACC-****",
-    "amount": "1500.00",
+    "amount": "25000.00",
     "currency": "USD",
-    "transaction_type": "transfer",
-    "description": "Monthly rent payment",
+    "transaction_type": "wire_transfer",
     "metadata": {
-      "channel": "online",
+      "channel": "branch",
       "country": "US"
     },
     "cross_border": false,
     "cross_border_flags": [],
     "status": "approved",
     "reason": null,
-    "risk_score": 0,
-    "risk_flags": [],
-    "fraud_review": false,
+    "risk_score": 50,
+    "risk_flags": [
+      "high_value"
+    ],
+    "fraud_review": true,
     "cross_border_review": false,
-    "needs_review": false,
+    "needs_review": true,
     "policy_flags": [
       "screened_clear"
     ],
-    "compliance_flags": [],
+    "compliance_flags": [
+      "CTR"
+    ],
     "cross_border_compliance_flags": []
   }
 }

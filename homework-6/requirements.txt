@@ -1,3 +1,6 @@
 fastmcp>=3.0
+fastapi
+uvicorn[standard]
+httpx
 pytest
 pytest-cov

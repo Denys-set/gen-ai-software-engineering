@@ -18,73 +18,53 @@ Review routing:
 from __future__ import annotations
 
 import sys
-from datetime import datetime, timezone
-from decimal import Decimal
 from pathlib import Path
 
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-    from agents.common import HOME_COUNTRY, audit, make_message, money  # type: ignore
+    from agents.common import audit, make_message  # type: ignore
+    from rules.engine import load_rules  # type: ignore
 else:
-    from .common import HOME_COUNTRY, audit, make_message, money
+    from .common import audit, make_message
+    from rules.engine import load_rules
 
 AGENT_NAME = "fraud_detector"
 
-HIGH_VALUE_THRESHOLD = Decimal("10000")
-HIGH_VALUE_POINTS = 50
-OFF_HOURS_POINTS = 20
-CROSS_BORDER_POINTS = 20
-FRAUD_REVIEW_THRESHOLD = 50  # per specification.md §5 / agents.md
-
-OFF_HOURS_START = 0  # inclusive
-OFF_HOURS_END = 6    # exclusive
+# All thresholds/points now come from the configurable rule engine (config/rules.json) —
+# see EXTENSION-PROMPTS.md Task 1. Pass a custom engine to score_transaction() to override.
 
 
-def _hour_utc(timestamp: str) -> int | None:
-    """Return the UTC hour of an ISO-8601 timestamp, or None if it can't be parsed."""
-    if not timestamp:
-        return None
-    try:
-        dt = datetime.fromisoformat(str(timestamp).replace("Z", "+00:00"))
-    except ValueError:
-        return None
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(timezone.utc).hour
-
-
-def score_transaction(data: dict) -> dict:
+def score_transaction(data: dict, engine=None) -> dict:
     """Compute risk fields for a validated transaction and return them as a dict.
 
-    Pure function (no I/O) so it is trivially unit-testable. Uses Decimal for money.
+    Pure function (no I/O) so it is trivially unit-testable. Uses Decimal for money and reads
+    every threshold from the rule engine (defaults to the config/rules.json singleton).
     """
+    engine = load_rules() if engine is None else engine
+
     risk_score = 0
     risk_flags: list[str] = []
     cross_border_flags: list[str] = []
 
     # high-value (domestic risk dimension) — Decimal comparison, never float
-    try:
-        amount = money(data.get("amount"))
-    except ValueError:
-        amount = Decimal("0")
-    if amount > HIGH_VALUE_THRESHOLD:
-        risk_score += HIGH_VALUE_POINTS
+    if engine.is_high_value(data.get("amount")):
+        risk_score += engine.high_value_points()
         risk_flags.append("high_value")
 
-    # off-hours (domestic risk dimension)
-    hour = _hour_utc(data.get("timestamp", ""))
-    if hour is not None and OFF_HOURS_START <= hour < OFF_HOURS_END:
-        risk_score += OFF_HOURS_POINTS
+    # off-hours (domestic risk dimension) — engine returns points (0 when outside the window)
+    off_hours_points = engine.off_hours_points_for(data.get("timestamp", ""))
+    if off_hours_points > 0:
+        risk_score += off_hours_points
         risk_flags.append("off_hours")
 
     # cross-border (separate dimension) — reuse the flag the validator already threaded in
     cross_border = bool(data.get("cross_border"))
     if cross_border:
-        risk_score += CROSS_BORDER_POINTS
+        risk_score += engine.cross_border_points()
         country = (data.get("metadata") or {}).get("country", "??")
         cross_border_flags.append(f"cross_border:{country}")
 
-    fraud_review = risk_score >= FRAUD_REVIEW_THRESHOLD
+    fraud_review = risk_score >= engine.fraud_review_threshold()
     cross_border_review = cross_border
     return {
         "risk_score": risk_score,
@@ -118,7 +98,8 @@ def process_message(message: dict) -> dict:
         outcome += f":{'|'.join(flags)}"
     audit(AGENT_NAME, txn_id, outcome)
 
-    return make_message(AGENT_NAME, "compliance_checker", "transaction", data)
+    # Route to the policy_agent (sanctions screen) which then hands off to compliance_checker.
+    return make_message(AGENT_NAME, "policy_agent", "transaction", data)
 
 
 if __name__ == "__main__":

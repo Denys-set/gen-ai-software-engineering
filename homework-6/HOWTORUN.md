@@ -143,3 +143,49 @@ claude mcp list
 - `list_pipeline_results()` → summary of all 8 processed transactions
 - `get_transaction_status("TXN005")` → `approved`, risk 50, `CTR` flag
 - resource `pipeline://summary` → the latest run summary as text
+
+## 7. REST API gateway + one-command demo
+
+The pipeline is also reachable over HTTP (extension). The **fastest path** is the demo script,
+which does everything with zero manual steps:
+
+```bash
+./demo.sh
+# creates the venv, installs deps, starts the API, submits 4 sample transactions,
+# prints each result + the summary, then shuts the server down cleanly.
+```
+
+Or run the API yourself:
+
+```bash
+uvicorn api.app:app --port 8100          # or: python -m api.app
+```
+
+Then, in another shell:
+
+```bash
+curl -s localhost:8100/health
+curl -s -X POST localhost:8100/transactions -H 'Content-Type: application/json' -d '{
+  "transaction_id":"T100","timestamp":"2026-03-16T09:00:00Z",
+  "source_account":"ACC-1001","destination_account":"ACC-2001",
+  "amount":"25000.00","currency":"USD","transaction_type":"wire_transfer",
+  "metadata":{"channel":"api","country":"US"}}'
+curl -s localhost:8100/transactions/T100      # stored result (accounts masked)
+curl -s localhost:8100/results                # summary of all processed txns
+```
+
+Interactive OpenAPI docs while the server runs: **http://localhost:8100/docs**.
+
+## 8. Change a rule (configurable engine)
+
+All policy lives in **`config/rules.json`** — no code change needed. For example, sanction a
+country and re-run:
+
+```bash
+# add "DE" to sanctioned_countries in config/rules.json, then:
+python integrator.py        # TXN004 (country DE) now → rejected: sanctions screening hit
+```
+
+Other knobs: `high_value_amount`, `off_hours_start/end`, `ctr_threshold`,
+`critical_risk_threshold`, `iso_4217_whitelist`, `sanctioned_accounts`. The engine validates the
+file on load and every agent reads it, so one edit changes the whole pipeline.

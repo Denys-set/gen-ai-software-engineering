@@ -25,12 +25,16 @@ if str(BASE_DIR) not in sys.path:
 
 import agents.common as common  # noqa: E402
 from agents.common import make_message, move_to, read_message, write_message, audit, utc_now_iso  # noqa: E402
-from agents import transaction_validator, fraud_detector, compliance_checker  # noqa: E402
+from agents import (  # noqa: E402
+    transaction_validator, fraud_detector, policy_agent, compliance_checker,
+)
 
-# stage name -> handler; routing follows each message's target_agent
+# stage name -> handler; routing follows each message's target_agent.
+# Order: validator -> fraud_detector -> policy_agent (sanctions) -> compliance_checker.
 AGENTS = {
     "transaction_validator": transaction_validator.process_message,
     "fraud_detector": fraud_detector.process_message,
+    "policy_agent": policy_agent.process_message,
     "compliance_checker": compliance_checker.process_message,
 }
 FIRST_STAGE = "transaction_validator"
@@ -50,9 +54,15 @@ def _reset_shared() -> None:
         common.AUDIT_LOG.unlink()
 
 
-def _process_one(record: dict) -> dict:
-    """Drive a single transaction record through every stage; return its terminal data dict."""
+def process_record(record: dict) -> dict:
+    """Drive a single transaction record through every stage; return its terminal data dict.
+
+    Public single-record entrypoint shared by run_pipeline() (batch) and api/app.py (per HTTP
+    request). Writes shared/results/<id>.json, masks PII, and appends the audit log. Does NOT
+    reset shared/ — callers that want a clean slate call _reset_shared() first (run_pipeline does).
+    """
     txn_id = record.get("transaction_id", "UNKNOWN")
+    common.RESULTS_DIR.mkdir(parents=True, exist_ok=True)  # API path may run without a prior reset
 
     # integrator builds the initial envelope and drops it in input/
     message = make_message("integrator", FIRST_STAGE, "transaction", dict(record))
@@ -130,7 +140,7 @@ def run_pipeline(transactions_path: str = "sample-transactions.json") -> dict:
     _reset_shared()
     records = json.loads(path.read_text(encoding="utf-8"))
 
-    results = [_process_one(record) for record in records]
+    results = [process_record(record) for record in records]
 
     summary = _build_summary(results)
     with open(common.RESULTS_DIR / "summary.json", "w", encoding="utf-8") as fh:

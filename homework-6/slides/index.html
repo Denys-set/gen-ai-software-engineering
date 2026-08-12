@@ -124,11 +124,13 @@
         <span class="tag">Python 3.12</span>
         <span class="tag">decimal.Decimal</span>
         <span class="tag">file-based JSON agents</span>
+        <span class="tag">configurable rule engine</span>
+        <span class="tag">REST API</span>
         <span class="tag">2 × MCP</span>
-        <span class="tag">94% coverage</span>
+        <span class="tag">93% coverage</span>
       </p>
     </div>
-    <aside class="notes">Four meta-agents build a banking pipeline of three cooperating runtime agents. Everything verified end-to-end.</aside>
+    <aside class="notes">Four meta-agents build a banking pipeline of four cooperating runtime agents, now driven by a configurable rule engine and reachable over a REST API. Everything verified end-to-end.</aside>
   </section>
 
   <!-- 02 · PROBLEM -->
@@ -185,46 +187,51 @@
         <span class="arrow">→</span>
         <div class="node"><div class="t">Fraud detector</div><div class="s">risk score</div></div>
         <span class="arrow">→</span>
+        <div class="node"><div class="t">Policy</div><div class="s">sanctions screen</div></div>
+        <span class="arrow">→</span>
         <div class="node"><div class="t">Compliance</div><div class="s">approve / reject</div></div>
         <span class="arrow">→</span>
         <div class="node navy"><div class="t">Outcome</div><div class="s">audited result</div></div>
       </div>
     </div>
     <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">The deliverable is BOTH the four builders and the running system.</aside>
+    <aside class="notes">The deliverable is BOTH the four builders and the running system. The runtime pipeline now has four agents — the policy/sanctions screen was added in the extension.</aside>
   </section>
 
   <!-- 04 · ARCHITECTURE (diagram) -->
   <section>
     <div class="kick">Architecture</div>
-    <h2 class="ttl">One integrator, three agents, four mailboxes</h2>
+    <h2 class="ttl">One integrator, four agents, two front doors</h2>
     <div class="ttl-underline"></div>
     <div class="body">
-      <div class="row" style="margin-bottom:6px;">
-        <div class="node navy"><div class="t">sample-transactions.json</div></div>
+      <div class="row" style="margin-bottom:6px;gap:10px;">
+        <div class="node navy"><div class="t">sample-transactions.json</div><div class="s">batch</div></div>
+        <div class="node amber"><div class="t">REST API</div><div class="s">POST /transactions</div></div>
         <span class="arrow">→</span>
-        <div class="node"><div class="t">integrator</div><div class="s">wraps each record in a JSON envelope</div></div>
+        <div class="node"><div class="t">integrator.process_record()</div><div class="s">shared single-record entrypoint</div></div>
       </div>
-      <div class="center" style="margin:14px 0;">
+      <div class="center" style="margin:12px 0;">
         <span class="chip">shared/input</span><span class="arrow" style="font-size:20px;">→</span>
         <span class="chip">processing</span><span class="arrow" style="font-size:20px;">→</span>
         <span class="chip">output</span><span class="arrow" style="font-size:20px;">→</span>
         <span class="chip">results</span>
         <div style="font-size:15px;color:var(--muted);margin-top:6px;">a file's folder = its state · atomic moves</div>
       </div>
-      <div class="row">
+      <div class="row" style="gap:10px;">
         <div class="node"><div class="t">Validator</div></div>
         <span class="arrow">→</span>
-        <div class="node"><div class="t">Fraud detector</div></div>
+        <div class="node"><div class="t">Fraud</div></div>
+        <span class="arrow">→</span>
+        <div class="node amber"><div class="t">Policy</div><div class="s">sanctions</div></div>
         <span class="arrow">→</span>
         <div class="node"><div class="t">Compliance</div></div>
         <span class="arrow">→</span>
-        <div class="node navy"><div class="t">results/</div><div class="s">+ summary.json · audit.log</div></div>
+        <div class="node navy"><div class="t">results/</div><div class="s">+ summary · audit.log</div></div>
       </div>
-      <p class="cap" style="margin-top:18px;">A rejection short-circuits the rest — yet the transaction still lands in <b>results/</b> with its reason. Queryable over MCP.</p>
+      <p class="cap" style="margin-top:16px;">Rules come from <code>config/rules.json</code> (engine). A rejection short-circuits the rest — yet the txn still lands in <b>results/</b>. Queryable over MCP <b>and</b> HTTP.</p>
     </div>
     <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">Directory = state. Everything ends in results/, even rejects.</aside>
+    <aside class="notes">Directory = state. Batch (file) and API (HTTP) share process_record(). Everything ends in results/, even rejects.</aside>
   </section>
 
   <!-- 05 · MESSAGE PROTOCOL -->
@@ -262,25 +269,28 @@
   <!-- 06 · THREE AGENTS (table) -->
   <section>
     <div class="kick">The runtime pipeline</div>
-    <h2 class="ttl">Three agents, three decisions</h2>
+    <h2 class="ttl">Four agents, four decisions</h2>
     <div class="ttl-underline"></div>
     <div class="body">
-      <table class="clean">
-        <tr><th style="width:18%">Agent</th><th style="width:26%">Decision</th><th>Rules it enforces</th></tr>
+      <table class="clean" style="font-size:18px;">
+        <tr><th style="width:16%">Agent</th><th style="width:24%">Decision</th><th>Rules it enforces (all from <code>config/rules.json</code>)</th></tr>
         <tr><td><strong style="color:var(--navy)">Validator</strong></td>
             <td><span class="ok">valid → fraud</span> · else <span class="no">reject</span></td>
-            <td>required fields · positive <code>Decimal</code> · ISO-4217 whitelist · sets <code>cross_border</code> once</td></tr>
+            <td>required fields · positive <code>Decimal</code> · ISO-4217 whitelist · sets <code>cross_border</code></td></tr>
         <tr><td><strong style="color:var(--navy)">Fraud detector</strong></td>
             <td>risk score + review flags</td>
             <td>+50 if &gt; $10k · +20 off-hours (0–6h) · +20 cross-border · review at ≥ 50</td></tr>
+        <tr><td><strong style="color:var(--accent2)">Policy</strong> <span style="font-size:12px;color:var(--accent)">NEW</span></td>
+            <td><span class="ok">clear → compliance</span> · else <span class="no">reject</span></td>
+            <td>configurable sanctions screen — restricted country / account (never logged)</td></tr>
         <tr><td><strong style="color:var(--navy)">Compliance</strong></td>
             <td><span class="ok">approve</span> / <span class="no">reject</span> + reason</td>
-            <td>CTR flag ≥ $10k · cross-border EDD · sanctions screen · reject if risk ≥ 70</td></tr>
+            <td>CTR flag ≥ $10k · cross-border EDD · reject if risk ≥ 70</td></tr>
       </table>
-      <p class="cap" style="margin-top:16px;">Cross-border risk lives in fields <b>separate</b> from domestic risk — a reviewer sees <b>why</b> a txn was flagged.</p>
+      <p class="cap" style="margin-top:14px;">Cross-border risk lives in fields <b>separate</b> from domestic risk — a reviewer sees <b>why</b> a txn was flagged.</p>
     </div>
     <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">Each agent's core is a pure function — trivially unit-testable.</aside>
+    <aside class="notes">Each agent's core is a pure function — trivially unit-testable. The policy/sanctions stage was added in the extension.</aside>
   </section>
 
   <!-- 07 · BANKING-SAFE -->
@@ -443,6 +453,70 @@
     <aside class="notes">Second capture (mcp-interaction-2) is in the appendix.</aside>
   </section>
 
+  <!-- 13b · EXTENSION: RULE ENGINE -->
+  <section>
+    <div class="kick">Extension · configurable rule engine</div>
+    <h2 class="ttl">Policy is data, not code</h2>
+    <div class="ttl-underline"></div>
+    <div class="body split">
+      <div class="c">
+        <ul>
+          <li>Every threshold &amp; list lives in <strong>config/rules.json</strong></li>
+          <li>Agents read a validated <code>RuleEngine</code> — <span class="no">no hard-coded constants</span></li>
+          <li>Change policy without touching Python, then re-run</li>
+          <li>New <strong style="color:var(--accent2)">policy agent</strong> screens sanctions from the same config</li>
+        </ul>
+        <p class="cap" style="text-align:left;">Proof: add <code>"DE"</code> to <code>sanctioned_countries</code> →
+          <b>TXN004 rejected</b> — "sanctions screening hit". Revert → approved.</p>
+      </div>
+      <div class="c">
+        <div class="card"><pre><code data-trim class="language-json">{
+  "high_value_amount": "10000",
+  "off_hours_start": 0, "off_hours_end": 6,
+  "ctr_threshold": "10000",
+  "critical_risk_threshold": 70,
+  "iso_4217_whitelist": ["USD","EUR","GBP", "…"],
+  "sanctioned_countries": [],
+  "sanctioned_accounts": []
+}</code></pre></div>
+        <p class="cap">config/rules.json — one edit changes the whole pipeline</p>
+      </div>
+    </div>
+    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
+    <aside class="notes">Refactored the 3 original agents to read the engine — identical default outcomes — then added the policy agent as a 4th stage.</aside>
+  </section>
+
+  <!-- 13c · EXTENSION: REST API + DEMO -->
+  <section>
+    <div class="kick">Extension · REST API + one command</div>
+    <h2 class="ttl">Same pipeline, now over HTTP</h2>
+    <div class="ttl-underline"></div>
+    <div class="body split">
+      <div class="c">
+        <p style="font-weight:700;color:var(--navy);">FastAPI gateway (<code>api/app.py</code>)</p>
+        <ul style="font-size:20px;">
+          <li><code>GET /health</code></li>
+          <li><code>POST /transactions</code> → 201, result (accounts masked)</li>
+          <li><code>GET /transactions/{id}</code> · <code>GET /results</code></li>
+          <li>auto OpenAPI docs at <code>/docs</code></li>
+        </ul>
+        <p class="lead" style="font-size:18px;">Batch <b>and</b> API share one entrypoint — <code>integrator.process_record()</code>. No logic duplicated.</p>
+      </div>
+      <div class="c">
+        <div class="card"><pre><code data-trim class="language-bash">$ ./demo.sh          # zero manual steps
+▶ starting API on :8100 … ✓ up
+── POST /transactions — high-value wire
+  { "status": "approved",
+    "source_account": "ACC-****",
+    "compliance_flags": ["CTR"] }
+✅ 4 submitted → 3 approved, 1 rejected</code></pre></div>
+        <p class="cap"><code>demo.sh</code> — starts API, submits txns, prints results, cleans up</p>
+      </div>
+    </div>
+    <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
+    <aside class="notes">Two context7 lookups (FastAPI, Uvicorn) recorded as Query 3 &amp; 4 in research-notes.md.</aside>
+  </section>
+
   <!-- 14 · TESTS (screenshot + stats) -->
   <section>
     <div class="kick">Evidence</div>
@@ -451,12 +525,12 @@
     <div class="body split">
       <div class="c">
         <div class="stats" style="flex-direction:column;gap:16px;">
-          <div class="box"><div class="n">52</div><div class="l">tests pass</div></div>
-          <div class="box"><div class="n g">94%</div><div class="l">coverage</div></div>
+          <div class="box"><div class="n">84</div><div class="l">tests pass</div></div>
+          <div class="box"><div class="n g">93%</div><div class="l">coverage</div></div>
         </div>
         <ul style="font-size:19px;margin-top:16px;">
-          <li>Unit tests per agent + MCP server</li>
-          <li>1 integration test — full pipeline</li>
+          <li>Unit tests per agent + MCP + rule engine</li>
+          <li>Integration + REST API (TestClient)</li>
           <li>Isolated via <code>tmp_path</code></li>
         </ul>
       </div>
@@ -467,7 +541,7 @@
       </div>
     </div>
     <div class="foot"><span>Multi-Agent Banking Pipeline</span><span>Denys Kubrakov</span></div>
-    <aside class="notes">94.20% total; per-module 89–99%.</aside>
+    <aside class="notes">93.30% total across all packages incl. api + rules; 84 tests. (Screenshot shows the earlier core-only 94% run.)</aside>
   </section>
 
   <!-- 15 · SUCCESS CRITERIA -->
@@ -486,7 +560,7 @@
       </ul>
       <ul class="checks c">
         <li>Both MCP servers respond</li>
-        <li>Coverage ≥ 80% (<strong style="color:var(--ok)">94%</strong>)</li>
+        <li>Coverage ≥ 80% (<strong style="color:var(--ok)">93%</strong>, 84 tests)</li>
         <li>README: name + ASCII diagram</li>
         <li>HOWTORUN numbered steps</li>
         <li>Screenshots in repo + PR</li>
@@ -506,8 +580,9 @@
         <li><em style="color:#6ee7b7">Spec-first</em> — one authoritative contract</li>
         <li><em style="color:#6ee7b7">Agents as files</em> — directory = state, fully auditable</li>
         <li><em style="color:#6ee7b7">Correctness enforced</em> — Decimal, ISO-4217, PII masking</li>
-        <li><em style="color:#6ee7b7">Quality gated</em> — push blocked below 80% (94% actual)</li>
+        <li><em style="color:#6ee7b7">Quality gated</em> — push blocked below 80% (93% actual)</li>
         <li><em style="color:#6ee7b7">Queryable</em> — custom FastMCP + context7</li>
+        <li><em style="color:#6ee7b7">Extensible</em> — configurable rule engine + REST API added cleanly</li>
       </ul>
       <p style="margin-top:26px;"><span class="tag">github.com/Denys-set/gen-ai-software-engineering · homework-6</span></p>
       <p style="color:#9fb3c8;font-size:20px;margin-top:10px;">Thank you — questions?</p>
