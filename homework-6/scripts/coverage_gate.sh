@@ -28,7 +28,7 @@ fi
 
 echo "[coverage-gate] enforcing >= ${THRESHOLD}% coverage (interpreter: ${PY})"
 "$PY" -m pytest \
-  --cov=agents --cov=mcp --cov=integrator \
+  --cov=agents --cov=mcp --cov=integrator --cov=api --cov=rules \
   --cov-report=term-missing \
   "--cov-fail-under=${THRESHOLD}" \
   -q

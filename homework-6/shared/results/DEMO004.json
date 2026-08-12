@@ -1,18 +1,17 @@
 {
-  "message_id": "6405d289-6c21-47ff-8d2a-bf552397336e",
-  "timestamp": "2026-08-12T16:31:52Z",
+  "message_id": "d539533f-e256-4a4a-b2a4-ac3a993a59d1",
+  "timestamp": "2026-08-12T16:36:27Z",
   "source_agent": "transaction_validator",
   "target_agent": "results",
   "message_type": "transaction",
   "data": {
-    "transaction_id": "TXN006",
+    "transaction_id": "DEMO004",
     "timestamp": "2026-03-16T10:05:00Z",
     "source_account": "ACC-****",
     "destination_account": "ACC-****",
     "amount": "200.00",
     "currency": "XYZ",
     "transaction_type": "transfer",
-    "description": "Test payment",
     "metadata": {
       "channel": "online",
       "country": "US"

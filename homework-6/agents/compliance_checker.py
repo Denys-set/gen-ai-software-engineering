@@ -20,40 +20,36 @@ transaction id + outcome only.
 from __future__ import annotations
 
 import sys
-from decimal import Decimal
 from pathlib import Path
 
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-    from agents.common import audit, make_message, money  # type: ignore
+    from agents.common import audit, make_message  # type: ignore
+    from rules.engine import load_rules  # type: ignore
 else:
-    from .common import audit, make_message, money
+    from .common import audit, make_message
+    from rules.engine import load_rules
 
 AGENT_NAME = "compliance_checker"
 
-CTR_THRESHOLD = Decimal("10000")   # currency-transaction report: amount >= threshold
-CRITICAL_RISK_THRESHOLD = 70       # reject at/above this fraud risk score
-
-# Configurable sanctions list (account identifiers). Empty by default so the sample data flows
-# on amount/risk alone; tests and real deployments populate it. Kept in memory — never logged.
+# CTR + critical-risk thresholds now come from the configurable rule engine (config/rules.json) —
+# see EXTENSION-PROMPTS.md Task 1. Sanctions screening is the new policy_agent's job, but this
+# agent keeps an optional in-memory `sanctions` override for its own unit tests.
 SANCTIONS_LIST: set[str] = set()
 
 
-def evaluate(data: dict, sanctions: set[str] | None = None) -> dict:
+def evaluate(data: dict, sanctions: set[str] | None = None, engine=None) -> dict:
     """Pure compliance evaluation. Returns the fields to merge into data.
 
-    No I/O — trivially unit-testable. Uses Decimal for money.
+    No I/O — trivially unit-testable. Money handling and thresholds come from the rule engine.
     """
+    engine = load_rules() if engine is None else engine
     sanctions = SANCTIONS_LIST if sanctions is None else sanctions
 
     compliance_flags: list[str] = []
     cross_border_compliance_flags: list[str] = []
 
-    try:
-        amount = money(data.get("amount"))
-    except ValueError:
-        amount = Decimal("0")
-    if amount >= CTR_THRESHOLD:
+    if engine.requires_ctr(data.get("amount")):
         compliance_flags.append("CTR")
 
     if data.get("cross_border"):
@@ -67,7 +63,7 @@ def evaluate(data: dict, sanctions: set[str] | None = None) -> dict:
 
     if sanctioned:
         status, reason = "rejected", "sanctions screening hit"
-    elif risk_score >= CRITICAL_RISK_THRESHOLD:
+    elif risk_score >= engine.critical_risk_threshold():
         status, reason = "rejected", f"critical risk score {risk_score}"
     else:
         status, reason = "approved", None

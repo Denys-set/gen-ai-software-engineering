@@ -75,11 +75,12 @@ def test_bad_amount_scores_zero_high_value():
     assert "high_value" not in r["risk_flags"]
 
 
-def test_process_message_routes_to_compliance():
+def test_process_message_routes_to_policy_agent():
+    # Fraud now hands off to the policy_agent (sanctions screen) before compliance.
     m = common.make_message("v", "fraud_detector", "transaction",
                             _data(amount="25000.00", status="validated"))
     out = f.process_message(m)
-    assert out["target_agent"] == "compliance_checker"
+    assert out["target_agent"] == "policy_agent"
     assert out["data"]["status"] == "scored"
     assert out["data"]["risk_score"] == 50
 

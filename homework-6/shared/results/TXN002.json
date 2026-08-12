@@ -1,6 +1,6 @@
 {
-  "message_id": "69ad339b-4505-42d6-9edd-7b27e3eaacd3",
-  "timestamp": "2026-08-07T14:34:40Z",
+  "message_id": "67e23030-49f1-4225-a05d-44764185067e",
+  "timestamp": "2026-08-12T16:31:52Z",
   "source_agent": "compliance_checker",
   "target_agent": "results",
   "message_type": "transaction",
@@ -28,6 +28,9 @@
     "fraud_review": true,
     "cross_border_review": false,
     "needs_review": true,
+    "policy_flags": [
+      "screened_clear"
+    ],
     "compliance_flags": [
       "CTR"
     ],

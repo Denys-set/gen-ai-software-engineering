@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "_comment": "Single source of truth for all tunable banking policy. Monetary values are STRINGS so they parse to decimal.Decimal (never float). Change a value here to change pipeline behavior without touching Python.",
+  "_groups": {
+    "jurisdiction": "home_country + iso_4217_whitelist",
+    "fraud": "high_value_*, off_hours_*, cross_border_points, fraud_review_threshold",
+    "compliance": "ctr_threshold, critical_risk_threshold",
+    "sanctions": "sanctioned_countries, sanctioned_accounts (empty by default)"
+  },
+
+  "home_country": "US",
+  "iso_4217_whitelist": [
+    "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "NZD", "SEK", "NOK",
+    "DKK", "CNY", "HKD", "SGD", "INR", "BRL", "ZAR", "MXN", "PLN", "AED"
+  ],
+
+  "high_value_amount": "10000",
+  "high_value_points": 50,
+  "off_hours_start": 0,
+  "off_hours_end": 6,
+  "off_hours_points": 20,
+  "cross_border_points": 20,
+  "fraud_review_threshold": 50,
+
+  "ctr_threshold": "10000",
+  "critical_risk_threshold": 70,
+
+  "sanctioned_countries": [],
+  "sanctioned_accounts": []
+}

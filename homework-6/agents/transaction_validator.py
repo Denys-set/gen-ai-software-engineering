@@ -18,11 +18,11 @@ from pathlib import Path
 # Support both "python agents/transaction_validator.py" and "import agents.transaction_validator".
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-    from agents.common import (  # type: ignore
-        BASE_DIR, HOME_COUNTRY, audit, make_message, money,
-    )
+    from agents.common import BASE_DIR, audit, make_message, money  # type: ignore
+    from rules.engine import load_rules  # type: ignore
 else:
-    from .common import BASE_DIR, HOME_COUNTRY, audit, make_message, money
+    from .common import BASE_DIR, audit, make_message, money
+    from rules.engine import load_rules
 
 AGENT_NAME = "transaction_validator"
 
@@ -37,11 +37,8 @@ REQUIRED_FIELDS = (
     "transaction_type",
 )
 
-# ISO-4217 currency whitelist (common codes; extend as needed). "XYZ" is intentionally absent.
-ISO_4217 = {
-    "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "NZD", "SEK", "NOK",
-    "DKK", "CNY", "HKD", "SGD", "INR", "BRL", "ZAR", "MXN", "PLN", "AED",
-}
+# Currency whitelist and home jurisdiction now come from the configurable rule engine
+# (config/rules.json) rather than hard-coded constants — see EXTENSION-PROMPTS.md Task 1.
 
 # --- Contested rule (see spec §2.3 vs. Step 2.3 prompt) --------------------------------------
 # Spec §2.3 declares TXN007 (a -100.00 refund) a REJECTION regression case: non-positive amounts
@@ -52,17 +49,22 @@ ISO_4217 = {
 ALLOW_NEGATIVE_REFUNDS = False
 
 
-def _is_cross_border(data: dict) -> bool:
-    """Cross-border iff metadata.country is present and != HOME_COUNTRY. Jurisdiction, not PII."""
+def _is_cross_border(data: dict, engine=None) -> bool:
+    """Cross-border iff metadata.country is present and != home country. Jurisdiction, not PII."""
+    engine = load_rules() if engine is None else engine
     country = (data.get("metadata") or {}).get("country")
-    return country is not None and country != HOME_COUNTRY
+    return country is not None and country != engine.home_country()
 
 
-def validate_data(data: dict) -> str | None:
+def validate_data(data: dict, engine=None) -> str | None:
     """Return a rejection reason string, or None if the transaction is valid.
 
     Reasons never contain PII — only field names, currency codes, and transaction ids.
+    Thresholds/whitelists come from the rule engine (config/rules.json); pass a custom
+    ``engine`` to override (tests).
     """
+    engine = load_rules() if engine is None else engine
+
     # 1. required fields present and non-empty
     for field in REQUIRED_FIELDS:
         if field not in data or data[field] in (None, ""):
@@ -80,15 +82,15 @@ def validate_data(data: dict) -> str | None:
         if not (ALLOW_NEGATIVE_REFUNDS and is_refund):
             return "amount must be positive"
 
-    # 3. currency is a valid ISO-4217 code
+    # 3. currency is a valid ISO-4217 code (whitelist from the engine)
     currency = data["currency"]
-    if currency not in ISO_4217:
+    if not engine.is_valid_currency(currency):
         return f"unsupported currency: {currency}"
 
     return None
 
 
-def process_message(message: dict) -> dict:
+def process_message(message: dict, engine=None) -> dict:
     """Validate the transaction in message['data'] and return the routed outgoing message.
 
     - Computes `cross_border` ONCE and threads it through data (spec §3) so every downstream
@@ -97,15 +99,16 @@ def process_message(message: dict) -> dict:
     - On failure: data.status = "rejected" with a reason, routed to results.
     Audits the decision (transaction id + outcome only — no PII).
     """
+    engine = load_rules() if engine is None else engine
     data = dict(message.get("data", {}))
     txn_id = data.get("transaction_id", "UNKNOWN")
 
     # Cross-border is determined here, once, before validation may short-circuit — so a
     # rejected cross-border txn (e.g. TXN007) still carries cross_border in its result.
-    data["cross_border"] = _is_cross_border(data)
+    data["cross_border"] = _is_cross_border(data, engine)
     data.setdefault("cross_border_flags", [])
 
-    reason = validate_data(data)
+    reason = validate_data(data, engine)
     if reason is not None:
         data["status"] = "rejected"
         data["reason"] = reason
